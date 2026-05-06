@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: Mock ERP API (ERPNext Aligned)
+  version: v15.0.0
+  description: >
+    Mock ERP server simulating ERPNext (Frappe Framework) REST API conventions.
+    All resource endpoints are available under `/api/resource/{DocType}`.
+servers:
+  - url: http://localhost:8081/api
+    description: Mock ERP Server
+
+components:
+  securitySchemes:
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: "Format: token {api_key}:{api_secret}"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        exc_type:
+          type: string
+          example: "DoesNotExistError"
+        exception:
+          type: string
+          example: "frappe.exceptions.DoesNotExistError: Resource not found"
+        _server_messages:
+          type: string
+          example: "[]"
+
+    # Finance Schemas
+    PurchaseInvoiceItem:
+      type: object
+      properties:
+        item_code: { type: string }
+        item_name: { type: string }
+        qty: { type: number }
+        uom: { type: string }
+        rate: { type: number }
+        amount: { type: number }
+        expense_account: { type: string }
+
+    PurchaseInvoice:
+      type: object
+      properties:
+        name: { type: string }
+        doctype: { type: string, example: "Purchase Invoice" }
+        docstatus: { type: integer, enum: [0, 1, 2] }
+        supplier: { type: string }
+        supplier_name: { type: string }
+        posting_date: { type: string, format: date }
+        grand_total: { type: number }
+        status: { type: string }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseInvoiceItem'
+
+    # HR Schemas
+    Employee:
+      type: object
+      properties:
+        name: { type: string }
+        employee_name: { type: string }
+        designation: { type: string }
+        department: { type: string }
+        status: { type: string, enum: [Active, Inactive, Left] }
+        user_id: { type: string, format: email }
+
+    # Inventory Schemas
+    Item:
+      type: object
+      properties:
+        name: { type: string }
+        item_code: { type: string }
+        item_name: { type: string }
+        item_group: { type: string }
+        stock_uom: { type: string }
+        standard_rate: { type: number }
+        valuation_rate: { type: number }
+
+    Bin:
+      type: object
+      properties:
+        name: { type: string }
+        item_code: { type: string }
+        warehouse: { type: string }
+        actual_qty: { type: number }
+        reserved_qty: { type: number }
+        ordered_qty: { type: number }
+        projected_qty: { type: number }
+
+paths:
+  /resource/Purchase Invoice:
+    get:
+      summary: List Purchase Invoices
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PurchaseInvoice'
+  /resource/Employee:
+    get:
+      summary: List Employees
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Employee'
+  /resource/Item:
+    get:
+      summary: List Items
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Item'
+  /resource/Bin:
+    get:
+      summary: List Bins (Stock Levels)
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - name: filters
+          in: query
+          schema:
+            type: string
+          example: '[["Bin","item_code","=","ITEM-001"]]'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bin'
