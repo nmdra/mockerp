@@ -12,21 +12,14 @@ A FastAPI-based mock ERP server that simulates the **ERPNext (Frappe Framework)*
 ## Getting Started
 
 ### Prerequisites
-- Python 3.9+
+- Python 3.11+
 - [uv](https://github.com/astral-sh/uv) (Recommended) or `pip`
 
 ### Running the Server
-Using `uv`:
+Using `uv` (Recommended):
 ```bash
 cd mock-erp
-uv run --with fastapi --with uvicorn python main.py
-```
-
-Using `pip`:
-```bash
-cd mock-erp
-pip install -r requirements.txt
-python main.py
+uv run main.py
 ```
 
 The server will be available at `http://localhost:8081`.
