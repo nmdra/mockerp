@@ -158,6 +158,36 @@ components:
         grand_total: { type: number }
         status: { type: string }
 
+    PluginFixture:
+      type: object
+      required: [id, state]
+      properties:
+        id: { type: string, example: plugin-fixture }
+        state: { type: string, example: source }
+
+    IntegrationEchoRequest:
+      type: object
+      additionalProperties: true
+      example:
+        nested: { value: 7 }
+        items: [a, b]
+
+    IntegrationEchoResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/IntegrationEchoRequest'
+
+    IntegrationEchoLastResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          allOf:
+            - $ref: '#/components/schemas/IntegrationEchoRequest'
+          nullable: true
+
 paths:
   /resource/Purchase Invoice:
     get:
@@ -430,3 +460,70 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/PurchaseOrder'
+
+  /resource/Plugin Fixture:
+    get:
+      summary: Return the stable fixture used by downstream integration tests.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Stable non-PII fixture.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PluginFixture'
+              example:
+                data: { id: plugin-fixture, state: source }
+        '401':
+          description: ERPNext-style authentication error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /integration/echo:
+    post:
+      summary: Echo and record one JSON object for integration-test inspection.
+      security: [{ TokenAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntegrationEchoRequest'
+      responses:
+        '200':
+          description: The exact received object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationEchoResponse'
+        '401':
+          description: ERPNext-style authentication error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: The request body is not a JSON object.
+
+  /integration/echo/last:
+    get:
+      summary: Return the last object received by the echo fixture.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: The last object, or null before the first successful echo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationEchoLastResponse'
+        '401':
+          description: ERPNext-style authentication error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

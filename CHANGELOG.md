@@ -8,6 +8,7 @@ All notable changes to MockERP are documented here.
 
 - Standalone CI and GHCR image publication workflows.
 - Health smoke coverage for the service boundary.
+- Authenticated deterministic integration fixture and echo endpoints.
 
 ## [0.1.0] - 2026-08-24
 

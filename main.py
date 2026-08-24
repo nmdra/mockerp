@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
-from routers import finance, hr, inventory
+from routers import finance, hr, integration, inventory
 
 app = FastAPI(title="Mock ERP Service")
 
@@ -19,6 +19,7 @@ async def erpnext_exception_handler(request: Request, exc: HTTPException):
 app.include_router(finance.router)
 app.include_router(hr.router)
 app.include_router(inventory.router)
+app.include_router(integration.router)
 
 @app.get("/health")
 async def health():

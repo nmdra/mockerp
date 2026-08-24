@@ -53,6 +53,22 @@ Set a cookie named `sid`.
 - `sid=sess-888-admin` (Admin role)
 - `sid=sess-999-finance` (Finance Viewer role)
 
+## Shared integration fixtures
+
+These deterministic endpoints are used by ERPBridge integration tests. Each
+route requires the existing ERPNext-style authentication boundary.
+
+- `GET /api/resource/Plugin Fixture` returns
+  `{"data":{"id":"plugin-fixture","state":"source"}}`.
+- `POST /api/integration/echo` accepts one JSON object and returns it unchanged
+  in the `data` property.
+- `GET /api/integration/echo/last` returns the last successful echo payload, or
+  `null` before the first echo. This readback is process-local test state and is
+  not persisted in the business database.
+
+The echo response never adds authorization, credential, timestamp, or request
+metadata. Non-object request bodies return `422`.
+
 ## API Documentation
 
 The full OpenAPI specification is available in
