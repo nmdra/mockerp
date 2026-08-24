@@ -29,10 +29,14 @@ credentials only; it is not a production ERP or a replacement for ERPNext.
 ### Running the Server
 Using `uv` (Recommended):
 ```bash
+export MOCK_ERP_CREDENTIALS_JSON='{"credentials":[{"api_key":"<api-key>","api_secret":"<api-secret>","role":"admin","identity":"admin-service"}]}'
 uv run main.py
 ```
 
-The server will be available at `http://localhost:8081`.
+The server will be available at `http://localhost:8081`. MockERP fails closed
+when no credential source is configured. For a Docker deployment, set
+`MOCK_ERP_CREDENTIALS_FILE` to a mounted JSON secret instead of using the
+inline environment variable.
 
 ## Authentication
 
@@ -40,18 +44,23 @@ The server will be available at `http://localhost:8081`.
 Include the `Authorization` header with the following format:
 `Authorization: token <api_key>:<api_secret>`
 
-**Mock Credentials:**
-| Role | API Key | API Secret | Header Example |
-| :--- | :--- | :--- | :--- |
-| Admin | `adm_key_001` | `adm_sec_stu901` | `token adm_key_001:adm_sec_stu901` |
-| Finance Editor | `fin_key_002` | `fin_sec_def456` | `token fin_key_002:fin_sec_def456` |
-| HR Manager | `hr_key_002` | `hr_sec_jkl012` | `token hr_key_002:hr_sec_jkl012` |
-| Inv Editor | `inv_key_002` | `inv_sec_pqr678` | `token inv_key_002:inv_sec_pqr678` |
+Credential configuration contains `credentials`, `sessions`, and optional
+`basic` lists. Each identity must define an opaque credential, a role, and an
+identity name. MockERP does not provide default credentials.
 
 ### Session Authentication
-Set a cookie named `sid`.
-- `sid=sess-888-admin` (Admin role)
-- `sid=sess-999-finance` (Finance Viewer role)
+Configure session IDs in the credential source, then set a cookie named `sid`.
+
+## SQLite platform
+
+MockERP stores platform data in SQLite. The default path is
+`/data/mockerp.db`; set `MOCK_ERP_DB_PATH` for local development. Startup applies
+idempotent migrations and seeds the SCP company, LKR fiscal settings, and safe
+service identity names. The destructive reset command is development-only:
+
+```bash
+MOCK_ERP_ENV=development MOCK_ERP_ALLOW_RESET=true uv run python -m seed --reset
+```
 
 ## Shared integration fixtures
 

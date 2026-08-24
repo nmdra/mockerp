@@ -9,6 +9,8 @@ All notable changes to MockERP are documented here.
 - Standalone CI and GHCR image publication workflows.
 - Health smoke coverage for the service boundary.
 - Authenticated deterministic integration fixture and echo endpoints.
+- SQLite platform migrations, deterministic SCP bootstrap, and development-only reset.
+- Environment or Docker-secret credential loading with fail-closed startup.
 
 ## [0.1.1] - 2026-08-24
 

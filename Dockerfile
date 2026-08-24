@@ -14,6 +14,8 @@ LABEL org.opencontainers.image.source="https://github.com/nmdra/mockerp"
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY . /app
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH" \
+    MOCK_ERP_DB_PATH=/data/mockerp.db
+VOLUME ["/data"]
 EXPOSE 8081
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8081"]
