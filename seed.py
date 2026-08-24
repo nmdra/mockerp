@@ -137,6 +137,7 @@ def seed_platform(database: Database) -> None:
     seed_organization(database)
     seed_finance(database)
     seed_hr(database)
+    seed_payroll(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -216,6 +217,63 @@ def seed_finance(database: Database) -> None:
         )
         connection.execute(
             "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PAY', 2)"
+        )
+
+
+def seed_payroll(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO salary_components (name, component_type, is_active)
+            VALUES (?, ?, 1)
+            """,
+            [("Basic Salary", "Earning"), ("Transport Allowance", "Earning"), ("Employee Welfare", "Deduction")],
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO salary_structures
+                (name, company_name, currency, is_active)
+            VALUES ('Officer Grade A', ?, 'LKR', 1)
+            """,
+            (_COMPANY[0],),
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO salary_structure_components
+                (structure_name, component_name, amount_minor, percentage)
+            VALUES ('Officer Grade A', ?, ?, NULL)
+            """,
+            [("Basic Salary", 0), ("Transport Allowance", 500000), ("Employee Welfare", 100000)],
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO salary_assignments
+                (employee_name, structure_name, base_amount_minor,
+                 from_date, to_date, is_active)
+            VALUES ('EMP-SCP-00001', 'Officer Grade A', 8500000, '2026-01-01', NULL, 1)
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO salary_slips
+                (name, employee_name, start_date, end_date, posting_date,
+                 gross_pay_minor, total_deduction_minor, net_pay_minor,
+                 status, docstatus, owner_identity)
+            VALUES ('SCP-SAL-2026-05-00001', 'EMP-SCP-00001',
+                    '2026-05-01', '2026-05-31', '2026-05-31',
+                    9000000, 100000, 8900000, 'Draft', 0, 'hr-service')
+            """
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO salary_slip_lines
+                (salary_slip_name, component_name, component_type, amount_minor)
+            VALUES ('SCP-SAL-2026-05-00001', ?, ?, ?)
+            """,
+            [("Basic Salary", "Earning", 8500000), ("Transport Allowance", "Earning", 500000), ("Employee Welfare", "Deduction", 100000)],
+        )
+        connection.execute(
+            "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-SAL', 2)"
         )
 
 

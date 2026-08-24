@@ -89,6 +89,12 @@ Journal entries and payment entries are created as drafts, submitted only after
 validation, and cancelled with compensating postings. Payment references update
 open-item balances in the same transaction as the ledger posting.
 
+## Payroll and expenses
+
+Payroll uses seeded salary components and active assignments to calculate salary
+slips. It does not calculate or claim compliance for PAYE, EPF, or ETF. Submitted
+salary slips and reimbursed expense claims create balanced finance postings.
+
 ## Shared integration fixtures
 
 These deterministic endpoints are used by ERPBridge integration tests. Each

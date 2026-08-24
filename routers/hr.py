@@ -8,7 +8,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from database import Database
 from dependencies import get_actor, get_database, get_role
 from repositories.hr import HRRepository
+from repositories.payroll import PayrollRepository
 from services.authorization import Actor
+from services.expenses import (
+    ExpenseError,
+    approve_expense_claim,
+    create_expense_claim,
+    reimburse_expense_claim,
+)
 from services.hr import (
     HRServiceError,
     approve_leave_application,
@@ -17,25 +24,16 @@ from services.hr import (
     create_leave_application,
     reject_leave_application,
 )
+from services.payroll import (
+    PayrollError,
+    approve_employee_advance,
+    create_employee_advance,
+    create_salary_slip,
+    settle_employee_advance,
+    submit_salary_slip,
+)
 
 router = APIRouter(prefix="/api/resource")
-
-salary_slips = [
-    {
-        "name": "SAL-SLIP-2026-05-001",
-        "doctype": "Salary Slip",
-        "employee": "EMP-SCP-00001",
-        "employee_name": "Kavindu Jayasekara",
-        "posting_date": "2026-05-31",
-        "start_date": "2026-05-01",
-        "end_date": "2026-05-31",
-        "salary_structure": "Officer Grade A",
-        "gross_pay": 85000.00,
-        "total_deduction": 12750.00,
-        "net_pay": 72250.00,
-        "status": "Submitted",
-    }
-]
 
 
 def _repository(database: Database) -> HRRepository:
@@ -221,6 +219,153 @@ async def cancel_leave_route(
     return {"data": application.as_dict()}
 
 
+@router.get("/Employee Advance")
+async def list_employee_advances(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    return {"data": PayrollRepository(database).list_employee_advances()}
+
+
+@router.post("/Employee Advance", status_code=201)
+async def create_employee_advance_route(
+    data: dict[str, Any],
+    database: Database = Depends(get_database),
+    actor: Actor = Depends(get_actor),
+) -> dict[str, dict[str, object]]:
+    try:
+        advance = create_employee_advance(
+            database,
+            actor,
+            employee_name=str(data.get("employee", "")),
+            posting_date=str(data.get("posting_date", date.today().isoformat())),
+            amount=data.get("advance_amount", 0),
+        )
+    except PayrollError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": advance.as_dict()}
+
+
+@router.post("/Employee Advance/{name}/approve")
+async def approve_employee_advance_route(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    try:
+        advance = approve_employee_advance(database, actor, name)
+    except PayrollError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": advance.as_dict()}
+
+
+@router.post("/Employee Advance/{name}/settle")
+async def settle_employee_advance_route(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    try:
+        advance = settle_employee_advance(database, actor, name)
+    except PayrollError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": advance.as_dict()}
+
+
 @router.get("/Salary Slip")
-async def list_salary_slips(role: str = Depends(get_role)) -> dict[str, list[dict[str, object]]]:
-    return {"data": salary_slips}
+async def list_salary_slips(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    slips = PayrollRepository(database).list_salary_slips()
+    if _can_view_all(actor):
+        return {"data": slips}
+    return {"data": [slip for slip in slips if slip["employee"] == actor.identity]}
+
+
+@router.get("/Salary Slip/{name}")
+async def get_salary_slip(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    slip = PayrollRepository(database).get_salary_slip(name)
+    if slip is None:
+        raise HTTPException(status_code=404, detail="Salary Slip not found")
+    if not _can_view_all(actor) and slip["employee"] != actor.identity:
+        raise HTTPException(status_code=403, detail="salary slip access is restricted")
+    return {"data": slip}
+
+
+@router.post("/Salary Slip", status_code=201)
+async def create_salary_slip_route(
+    data: dict[str, Any],
+    database: Database = Depends(get_database),
+    actor: Actor = Depends(get_actor),
+) -> dict[str, dict[str, object]]:
+    try:
+        slip = create_salary_slip(
+            database,
+            actor,
+            employee_name=str(data.get("employee", "")),
+            start_date=str(data.get("start_date", "")),
+            end_date=str(data.get("end_date", "")),
+        )
+    except PayrollError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": slip.as_dict()}
+
+
+@router.post("/Salary Slip/{name}/submit")
+async def submit_salary_slip_route(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    try:
+        slip = submit_salary_slip(database, actor, name)
+    except PayrollError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": slip.as_dict()}
+
+
+@router.get("/Expense Claim")
+async def list_expense_claims(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    claims = PayrollRepository(database).list_expense_claims()
+    if _can_view_all(actor):
+        return {"data": claims}
+    return {"data": [claim for claim in claims if claim["employee"] == actor.identity]}
+
+
+@router.post("/Expense Claim", status_code=201)
+async def create_expense_claim_route(
+    data: dict[str, Any],
+    database: Database = Depends(get_database),
+    actor: Actor = Depends(get_actor),
+) -> dict[str, dict[str, object]]:
+    try:
+        claim = create_expense_claim(
+            database,
+            actor,
+            employee_name=str(data.get("employee", "")),
+            posting_date=str(data.get("posting_date", date.today().isoformat())),
+            description=str(data.get("description", "")),
+            lines=data.get("lines") or [],
+        )
+    except ExpenseError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": claim.as_dict()}
+
+
+@router.post("/Expense Claim/{name}/approve")
+async def approve_expense_claim_route(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    try:
+        claim = approve_expense_claim(database, actor, name)
+    except ExpenseError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": claim.as_dict()}
+
+
+@router.post("/Expense Claim/{name}/reimburse")
+async def reimburse_expense_claim_route(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    try:
+        claim = reimburse_expense_claim(database, actor, name)
+    except ExpenseError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": claim.as_dict()}

@@ -574,21 +574,69 @@ paths:
 
   /resource/Salary Slip:
     get:
-      summary: Retrieve salary slips for all employees for payroll review and verification.
-      description: Retrieve a list of salary slips from the HR module.
+      summary: Retrieve salary slips for payroll review and verification.
       security: [{ TokenAuth: [] }]
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/SalarySlip'
+          description: Salary slips.
+    post:
+      summary: Calculate a draft salary slip from an active assignment.
+      security: [{ TokenAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee, start_date, end_date]
+              properties:
+                employee: { type: string }
+                start_date: { type: string, format: date }
+                end_date: { type: string, format: date }
+      responses:
+        '201': { description: Salary slip created. }
+        '422': { description: No active assignment or invalid period. }
+
+  /resource/Salary Slip/{name}/submit:
+    post:
+      summary: Submit a calculated salary slip and post its GL entry.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Salary slip submitted. }
+        '422': { description: Invalid salary slip lifecycle. }
+
+  /resource/Expense Claim:
+    get:
+      summary: List employee expense claims.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Expense claims. }
+    post:
+      summary: Create an expense claim for approval.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Expense claim created. }
+        '422': { description: Invalid expense claim. }
+
+  /resource/Expense Claim/{name}/approve:
+    post:
+      summary: Approve an expense claim.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Expense claim approved. }
+
+  /resource/Expense Claim/{name}/reimburse:
+    post:
+      summary: Reimburse an approved expense claim through Payment Entry.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Expense claim reimbursed. }
 
   /resource/Item:
     get:

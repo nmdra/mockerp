@@ -485,7 +485,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 8: Add payroll, employee advances, and expense claims.**
+- [x] **Task 8: Add payroll, employee advances, and expense claims.**
   Add salary components, salary structures/assignments, salary slips/lines,
   employee advances, expense claims/lines, and reimbursement/payment
   references. Calculate a monthly slip from approved structure components and
@@ -497,19 +497,20 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** approved payroll/expense document → HR calculation service →
   accounting posting service → GL and employee balance.
 
-  **Files:** `mock-erp/migrations/005_payroll.py` (new),
-  `mock-erp/repositories/payroll.py` (new), `mock-erp/services/payroll.py` (new),
-  `mock-erp/services/expenses.py` (new), `mock-erp/routers/hr.py`,
-  `mock-erp/routers/finance.py`, `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_payroll.py` (new),
-  `mock-erp/tests/test_expenses.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/005_payroll.py` (new),
+  `../mockerp/repositories/payroll.py` (new), `../mockerp/services/payroll.py` (new),
+  `../mockerp/services/expenses.py` (new), `../mockerp/routers/hr.py`,
+  `../mockerp/routers/finance.py`, `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_payroll.py` (new),
+  `../mockerp/tests/test_expenses.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_payroll.py tests/test_expenses.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_payroll.py tests/test_expenses.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 9: Add party, product, warehouse, and batch masters.**
