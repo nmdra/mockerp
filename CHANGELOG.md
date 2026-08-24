@@ -23,6 +23,12 @@ All notable changes to MockERP are documented here.
 - Fictional fixed-asset categories, lifecycle events, and disposal controls.
 - Role-gated deterministic operational reports and redacted audit readback.
 
+## [0.2.1] - 2026-08-24
+
+### Fixed
+
+- Quote comma-containing OpenAPI response descriptions so tool generation accepts the contract.
+
 ## [0.2.0] - 2026-08-24
 
 ### Added

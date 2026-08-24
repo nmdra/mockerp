@@ -692,7 +692,7 @@ paths:
                 status: { type: string, enum: [Present, Absent, Half Day, Work From Home] }
       responses:
         '201': { description: Attendance created. }
-        '422': { description: Invalid, future, or duplicate attendance. }
+        '422': { description: "Invalid, future, or duplicate attendance." }
 
   /resource/Leave Type:
     get:
@@ -967,7 +967,7 @@ paths:
       security: [{ TokenAuth: [] }]
       responses:
         '201': { description: Stock entry created. }
-        '422': { description: Invalid item, warehouse, or quantity. }
+        '422': { description: "Invalid item, warehouse, or quantity." }
 
   /resource/Stock Entry/{name}/submit:
     post:
