@@ -21,6 +21,7 @@ All notable changes to MockERP are documented here.
 - Southern Hotels order-to-cash flow with delivery stock issues and AR invoices.
 - Single-level Floor Cleaner BOM and production stock flow.
 - Fictional fixed-asset categories, lifecycle events, and disposal controls.
+- Role-gated deterministic operational reports and redacted audit readback.
 
 ## [0.1.1] - 2026-08-24
 

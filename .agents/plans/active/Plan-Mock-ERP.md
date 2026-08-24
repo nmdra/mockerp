@@ -680,7 +680,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 15: Deliver constrained dashboards, audit readback, and the full deterministic scenario.**
+- [x] **Task 15: Deliver constrained dashboards, audit readback, and the full deterministic scenario.**
   Add fixed, role-gated report endpoints for employee attendance/leave,
   AR/AP ageing and GL trial balance, stock by Item/Warehouse, sales order
   fulfilment, purchasing status, production consumption, and asset/depreciation
@@ -693,18 +693,19 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** reporting query service → SQLite ledger/master projections →
   role-gated JSON report response.
 
-  **Files:** `mock-erp/services/reports.py` (new),
-  `mock-erp/routers/reports.py` (new), `mock-erp/routers/organization.py`,
-  `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_reports.py` (new),
-  `mock-erp/tests/test_end_to_end_scenario.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/services/reports.py` (new),
+  `../mockerp/routers/reports.py` (new), `../mockerp/routers/organization.py`,
+  `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_reports.py` (new),
+  `../mockerp/tests/test_end_to_end_scenario.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_reports.py tests/test_end_to_end_scenario.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_reports.py tests/test_end_to_end_scenario.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 16: Publish the supported contract and complete integration quality gates.**

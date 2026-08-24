@@ -97,6 +97,13 @@ and Galle warehouse tree. Item responses expose source and target warehouse
 eligibility; stock quantities remain in the existing Bin fixture until the
 stock-ledger tasks are complete.
 
+## Reports
+
+Role-gated report endpoints provide trial balance, AR/AP, stock, HR,
+purchasing, sales, production, asset, and paginated redacted audit summaries.
+Report queries use persisted SQLite projections and do not expose credentials or
+protected document values.
+
 ## Fixed assets
 
 Asset categories and fictional sample assets cover vehicles, forklifts, factory

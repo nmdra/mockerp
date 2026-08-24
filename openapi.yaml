@@ -245,6 +245,71 @@ components:
         created_at: { type: string, format: date-time }
 
 paths:
+  /report/trial-balance:
+    get:
+      summary: Return a role-gated balanced GL trial balance.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Trial balance. }
+        '403': { description: Report access denied. }
+
+  /report/stock:
+    get:
+      summary: Return stock by item and warehouse.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Stock summary. }
+
+  /report/ar-ap:
+    get:
+      summary: Return AR and AP open-item balances.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: AR/AP summary. }
+
+  /report/attendance-leave:
+    get:
+      summary: Return attendance and leave summaries.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: HR summary. }
+
+  /report/sales-fulfillment:
+    get:
+      summary: Return sales order delivery and billing progress.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Sales fulfillment summary. }
+
+  /report/purchasing-status:
+    get:
+      summary: Return purchase order status and totals.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Purchasing summary. }
+
+  /report/production-consumption:
+    get:
+      summary: Return production consumption and output.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Production summary. }
+
+  /report/assets:
+    get:
+      summary: Return asset category and lifecycle summaries.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Asset summary. }
+
+  /report/audit:
+    get:
+      summary: Return paginated redacted audit history.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Audit report. }
+        '403': { description: Report access denied. }
+
   /resource/Purchase Invoice:
     get:
       summary: Fetch a paginated list of all purchase invoices stored in the finance module.
