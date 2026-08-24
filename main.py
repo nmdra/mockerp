@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from database import Database
 from dependencies import CredentialResolver
-from routers import finance, hr, integration, inventory
+from routers import finance, hr, integration, inventory, organization
 from seed import seed_platform
 from settings import load_settings
 
@@ -45,6 +45,7 @@ async def health() -> dict[str, str]:
 
 
 app.include_router(finance.router)
+app.include_router(organization.router)
 app.include_router(hr.router)
 app.include_router(inventory.router)
 app.include_router(integration.router)

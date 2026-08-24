@@ -62,6 +62,18 @@ service identity names. The destructive reset command is development-only:
 MOCK_ERP_ENV=development MOCK_ERP_ALLOW_RESET=true uv run python -m seed --reset
 ```
 
+## SCP organization and approvals
+
+Startup seeds the fictional SCP organization with Peliyagoda, Katunayake,
+Kandy, and Galle locations; department hierarchy; designations; employment
+types; service identities; and data-driven roles. Organization resources use
+ERPNext envelopes under `/api/resource/{DocType}`.
+
+Approval requests use configured sequential rules. A purchase order at or above
+the configured threshold requires finance and administrator approvals in order.
+Approval actions write immutable, redacted audit events. Credentials and
+protected document values are never written to audit metadata.
+
 ## Shared integration fixtures
 
 These deterministic endpoints are used by ERPBridge integration tests. Each

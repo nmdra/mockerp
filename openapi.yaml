@@ -188,6 +188,42 @@ components:
             - $ref: '#/components/schemas/IntegrationEchoRequest'
           nullable: true
 
+    OrganizationResource:
+      type: object
+      properties:
+        name: { type: string }
+        is_active: { type: integer, enum: [0, 1] }
+
+    ApprovalRequest:
+      type: object
+      required: [document_type, reference_name, amount]
+      properties:
+        name: { type: string }
+        document_type: { type: string }
+        reference_name: { type: string }
+        amount: { type: number, minimum: 0 }
+        status:
+          type: string
+          enum: [PENDING_APPROVAL, APPROVED, REJECTED, CANCELLED]
+        requester_identity: { type: string }
+
+    ApprovalActionRequest:
+      type: object
+      properties:
+        comment: { type: string }
+
+    AuditEvent:
+      type: object
+      properties:
+        name: { type: string }
+        actor_identity: { type: string }
+        action: { type: string }
+        resource_type: { type: string }
+        resource_id: { type: string }
+        before: { type: object, nullable: true }
+        after: { type: object, nullable: true }
+        created_at: { type: string, format: date-time }
+
 paths:
   /resource/Purchase Invoice:
     get:
@@ -460,6 +496,175 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/PurchaseOrder'
+
+  /resource/Company:
+    get:
+      summary: List the seeded SCP company profile.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Company records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/OrganizationResource' }
+
+  /resource/Branch:
+    get:
+      summary: List SCP operating locations.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Branch records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/OrganizationResource' }
+
+  /resource/Department:
+    get:
+      summary: List the SCP department hierarchy.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Department records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/OrganizationResource' }
+
+  /resource/Designation:
+    get:
+      summary: List SCP designations.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Designation records.
+
+  /resource/Employment Type:
+    get:
+      summary: List SCP employment types.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Employment type records.
+
+  /resource/User:
+    get:
+      summary: List safe SCP service identities and assigned roles.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: User records without credentials.
+
+  /resource/Role:
+    get:
+      summary: List configured organization roles.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Role records.
+
+  /resource/Approval Rule:
+    get:
+      summary: List sequential approval rules.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Approval rule records.
+
+  /resource/Approval Request:
+    get:
+      summary: List approval requests.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Approval request records.
+    post:
+      summary: Create a sequential approval request.
+      security: [{ TokenAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ApprovalRequest' }
+      responses:
+        '201':
+          description: Approval request created.
+        '422':
+          description: Invalid request or duplicate reference.
+
+  /resource/Approval Request/{name}:
+    get:
+      summary: Read one approval request.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Approval request.
+        '404':
+          description: Approval request not found.
+
+  /resource/Approval Request/{name}/approve:
+    post:
+      summary: Approve the next configured sequence.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ApprovalActionRequest' }
+      responses:
+        '200':
+          description: Approval request advanced.
+        '422':
+          description: Wrong approval role or sequence.
+
+  /resource/Approval Request/{name}/reject:
+    post:
+      summary: Reject the current approval sequence.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ApprovalActionRequest' }
+      responses:
+        '200':
+          description: Approval request rejected.
+        '422':
+          description: Wrong approval role or sequence.
+
+  /resource/Audit Event:
+    get:
+      summary: Read immutable redacted audit history.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Audit events.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/AuditEvent' }
 
   /resource/Plugin Fixture:
     get:
