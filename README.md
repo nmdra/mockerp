@@ -89,6 +89,14 @@ Journal entries and payment entries are created as drafts, submitted only after
 validation, and cancelled with compensating postings. Payment references update
 open-item balances in the same transaction as the ledger posting.
 
+## SCP inventory masters
+
+The master data includes fictional customers, suppliers, safe contacts, item
+groups, UOMs, batch-controlled items, and the Katunayake, Peliyagoda, Kandy,
+and Galle warehouse tree. Item responses expose source and target warehouse
+eligibility; stock quantities remain in the existing Bin fixture until the
+stock-ledger tasks are complete.
+
 ## Payroll and expenses
 
 Payroll uses seeded salary components and active assignments to calculate salary

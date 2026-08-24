@@ -15,6 +15,7 @@ All notable changes to MockERP are documented here.
 - SQLite-backed chart of accounts, journal entries, payments, and open-item allocation.
 - SCP employees, attendance, leave balances, and sequential leave approvals.
 - Assignment-based payroll, salary slips, employee advances, and expense claims.
+- Fictional SCP customer, supplier, item, UOM, and warehouse masters.
 
 ## [0.1.1] - 2026-08-24
 

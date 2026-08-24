@@ -1,7 +1,14 @@
-from fastapi import APIRouter, Depends, Request
-from typing import List, Optional, Any
-from dependencies import get_role, check_role, raise_erpnext_error
+from __future__ import annotations
+
 import json
+from typing import Any
+
+from fastapi import APIRouter, Depends, Request
+
+from database import Database
+from dependencies import get_actor, get_database, get_role, raise_erpnext_error
+from repositories.masters import MastersRepository
+from services.authorization import Actor
 
 router = APIRouter(prefix="/api/resource")
 
@@ -103,15 +110,55 @@ purchase_orders = [
 ]
 
 @router.get("/Item")
-async def list_items(role: str = Depends(get_role)):
-    return {"data": items}
+async def list_items(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    return {"data": MastersRepository(database).list_items()}
+
 
 @router.get("/Item/{name}")
-async def get_item(name: str, role: str = Depends(get_role)):
-    for item in items:
-        if item["name"] == name:
-            return {"data": item}
-    raise_erpnext_error("DoesNotExistError", f"Item {name} not found", 404)
+async def get_item(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    item = MastersRepository(database).get_item(name)
+    if item is None:
+        raise_erpnext_error("DoesNotExistError", f"Item {name} not found", 404)
+    return {"data": item}
+
+
+@router.get("/Customer")
+async def list_customers(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    return {"data": MastersRepository(database).list_customers()}
+
+
+@router.get("/Supplier")
+async def list_suppliers(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    return {"data": MastersRepository(database).list_suppliers()}
+
+
+@router.get("/Item Group")
+async def list_item_groups(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    return {"data": MastersRepository(database).list_item_groups()}
+
+
+@router.get("/UOM")
+async def list_uoms(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    return {"data": MastersRepository(database).list_uoms()}
+
+
+@router.get("/Warehouse")
+async def list_warehouses(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    return {"data": MastersRepository(database).list_warehouses()}
 
 @router.get("/Bin")
 async def list_bins(request: Request, role: str = Depends(get_role)):

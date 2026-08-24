@@ -638,6 +638,41 @@ paths:
       responses:
         '200': { description: Expense claim reimbursed. }
 
+  /resource/Customer:
+    get:
+      summary: List fictional SCP customers with safe contacts.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Customer records. }
+
+  /resource/Supplier:
+    get:
+      summary: List fictional SCP suppliers with safe contacts.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Supplier records. }
+
+  /resource/Item Group:
+    get:
+      summary: List SCP item groups.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Item group records. }
+
+  /resource/UOM:
+    get:
+      summary: List SCP units of measure.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: UOM records. }
+
+  /resource/Warehouse:
+    get:
+      summary: List the SCP warehouse tree.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Warehouse records. }
+
   /resource/Item:
     get:
       summary: Get a comprehensive list of all stock and non-stock items available in the inventory.

@@ -81,6 +81,41 @@ _APPROVAL_RULES = (
     ("Leave Application", 1, "department_manager", 0),
     ("Leave Application", 2, "hr_manager", 0),
 )
+_CUSTOMERS = (
+    ("SCP-Wholesale Distributors", "SCP Wholesale Distributors", "Wholesale", "Western"),
+    ("SCP-Kandy Retail Network", "SCP Kandy Retail Network", "Retail", "Central"),
+)
+_SUPPLIERS = (
+    ("SCP-Local Packaging", "SCP Local Packaging", "Packaging", "Sri Lanka"),
+    ("SCP-Imported Ingredients", "SCP Imported Ingredients", "Raw Materials", "Sri Lanka"),
+)
+_ITEM_GROUPS = (
+    ("Raw Materials", None),
+    ("Packaging", None),
+    ("Finished Goods", None),
+    ("Imported Products", None),
+    ("Office Supplies", None),
+    ("Spare Parts", None),
+    ("WIP", None),
+)
+_UOMS = (("Nos", 1), ("Kg", 0), ("Litre", 0), ("Box", 1))
+_WAREHOUSES = (
+    ("Katunayake Raw Material", None, "Raw Material"),
+    ("Katunayake WIP", None, "Work In Progress"),
+    ("Katunayake Finished Goods", None, "Finished Goods"),
+    ("Katunayake Scrap", None, "Scrap"),
+    ("Peliyagoda Main", None, "Distribution"),
+    ("Kandy DC", None, "Distribution"),
+    ("Galle DC", None, "Distribution"),
+)
+_ITEMS = (
+    ("RM-SUGAR-001", "Ceylon Cane Sugar", "Raw Materials", "Kg", 250, "Moving Average", 0, 1000, 5000),
+    ("PKG-BOTTLE-001", "Food Grade Bottle", "Packaging", "Nos", 35, "Moving Average", 0, 5000, 20000),
+    ("FG-TEA-001", "Serendib Breakfast Tea", "Finished Goods", "Box", 850, "FIFO", 1, 500, 2000),
+    ("IMP-SPICE-001", "Imported Cinnamon Blend", "Imported Products", "Kg", 1800, "FIFO", 1, 100, 500),
+    ("OFF-PAPER-001", "Office Copy Paper", "Office Supplies", "Box", 2200, "Moving Average", 0, 20, 100),
+    ("SPARE-BELT-001", "Factory Conveyor Belt", "Spare Parts", "Nos", 12500, "Moving Average", 0, 2, 5),
+)
 _EMPLOYEES = (
     (
         "EMP-SCP-00001",
@@ -138,6 +173,7 @@ def seed_platform(database: Database) -> None:
     seed_finance(database)
     seed_hr(database)
     seed_payroll(database)
+    seed_masters(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -217,6 +253,85 @@ def seed_finance(database: Database) -> None:
         )
         connection.execute(
             "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PAY', 2)"
+        )
+
+
+def seed_masters(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO customers
+                (name, customer_name, customer_group, territory, company_name, is_active)
+            VALUES (?, ?, ?, ?, ?, 1)
+            """,
+            [(name, customer_name, group, territory, _COMPANY[0]) for name, customer_name, group, territory in _CUSTOMERS],
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO suppliers
+                (name, supplier_name, supplier_group, country, company_name, is_active)
+            VALUES (?, ?, ?, ?, ?, 1)
+            """,
+            [(name, supplier_name, group, country, _COMPANY[0]) for name, supplier_name, group, country in _SUPPLIERS],
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO party_contacts
+                (party_type, party_name, contact_name, email, phone, address, is_primary)
+            VALUES (?, ?, ?, ?, ?, ?, 1)
+            """,
+            [
+                ("Supplier", "SCP-Local Packaging", "SCP Packaging Desk", "packaging@scp.example", "+94-11-555-0101", "Peliyagoda, Sri Lanka"),
+                ("Supplier", "SCP-Imported Ingredients", "SCP Ingredients Desk", "ingredients@scp.example", "+94-11-555-0102", "Katunayake, Sri Lanka"),
+                ("Customer", "SCP-Wholesale Distributors", "SCP Wholesale Desk", "wholesale@scp.example", "+94-11-555-0201", "Colombo, Sri Lanka"),
+            ],
+        )
+        connection.executemany(
+            "INSERT OR IGNORE INTO item_groups (name, parent_group) VALUES (?, ?)",
+            _ITEM_GROUPS,
+        )
+        connection.executemany(
+            "INSERT OR IGNORE INTO uoms (name, must_be_whole_number, is_active) VALUES (?, ?, 1)",
+            _UOMS,
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO warehouses
+                (name, parent_warehouse, company_name, warehouse_type, is_group, is_active)
+            VALUES (?, ?, ?, ?, 0, 1)
+            """,
+            [(name, parent, _COMPANY[0], kind) for name, parent, kind in _WAREHOUSES],
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO items
+                (name, item_name, description, item_group, stock_uom,
+                 standard_rate_minor, valuation_method, valuation_account,
+                 is_stock_item, is_purchase_item, is_sales_item, has_batch_no,
+                 reorder_level, reorder_qty, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, '5100 - COGS - SCP', 1, 1, 1, ?, ?, ?, 1)
+            """,
+            [
+                (name, item_name, f"Fictional SCP {item_name}", group, uom, rate * 100, method, batch, reorder, qty)
+                for name, item_name, group, uom, rate, method, batch, reorder, qty in _ITEMS
+            ],
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO item_warehouse_eligibility (item_code, warehouse, direction)
+            VALUES (?, ?, ?)
+            """,
+            [
+                (item, warehouse, direction)
+                for item, warehouse, direction in (
+                    ("RM-SUGAR-001", "Katunayake Raw Material", "source"),
+                    ("RM-SUGAR-001", "Katunayake WIP", "target"),
+                    ("FG-TEA-001", "Katunayake Finished Goods", "source"),
+                    ("FG-TEA-001", "Peliyagoda Main", "target"),
+                    ("FG-TEA-001", "Kandy DC", "target"),
+                    ("FG-TEA-001", "Galle DC", "target"),
+                )
+            ],
         )
 
 

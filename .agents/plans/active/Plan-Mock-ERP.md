@@ -513,7 +513,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 9: Add party, product, warehouse, and batch masters.**
+- [x] **Task 9: Add party, product, warehouse, and batch masters.**
   Add Customers/Suppliers with contacts and addresses; item groups; UOMs;
   Items; and the SCP warehouse tree: Katunayake Raw Material, WIP, Finished
   Goods, Scrap; Peliyagoda Main; Kandy DC; and Galle DC. Model purchase/sales/
@@ -527,19 +527,18 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** validated master command → master repository → supported DocType
   resource response.
 
-  **Files:** `mock-erp/migrations/006_masters.py` (new),
-  `mock-erp/repositories/masters.py` (new), `mock-erp/services/masters.py` (new),
-  `mock-erp/routers/masters.py` (new), `mock-erp/routers/inventory.py`,
-  `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_masters.py` (new),
-  `mock-erp/tests/test_master_routes.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/006_masters.py` (new),
+  `../mockerp/repositories/masters.py` (new), `../mockerp/routers/inventory.py`,
+  `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_masters.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_masters.py tests/test_master_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_masters.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 10: Implement stock transactions, stock ledger, and Bin balances.**
