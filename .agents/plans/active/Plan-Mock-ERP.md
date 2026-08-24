@@ -570,7 +570,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 11: Implement procure-to-pay.**
+- [x] **Task 11: Implement procure-to-pay.**
   Add Material Request, Purchase Order, Purchase Receipt, and Purchase Invoice
   headers/items and their source links. Enforce the SCP flow Material Request →
   approved Purchase Order → Purchase Receipt → Purchase Invoice → Payment
@@ -582,19 +582,20 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** submitted source document → procurement service → next-document
   mapper plus stock/accounting posting services.
 
-  **Files:** `mock-erp/migrations/008_purchasing.py` (new),
-  `mock-erp/repositories/purchasing.py` (new),
-  `mock-erp/services/purchasing.py` (new), `mock-erp/routers/purchasing.py` (new),
-  `mock-erp/routers/finance.py`, `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_purchasing.py` (new),
-  `mock-erp/tests/test_purchasing_routes.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/008_purchasing.py` (new),
+  `../mockerp/repositories/purchasing.py` (new),
+  `../mockerp/services/purchasing.py` (new), `../mockerp/routers/purchasing.py` (new),
+  `../mockerp/routers/finance.py`, `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_purchasing.py` (new),
+  `../mockerp/tests/test_purchasing_routes.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_purchasing.py tests/test_purchasing_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_purchasing.py tests/test_purchasing_routes.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 12: Implement order-to-cash.**

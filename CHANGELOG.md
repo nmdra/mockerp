@@ -17,6 +17,7 @@ All notable changes to MockERP are documented here.
 - Assignment-based payroll, salary slips, employee advances, and expense claims.
 - Fictional SCP customer, supplier, item, UOM, and warehouse masters.
 - Append-only stock ledger, Stock Entry lifecycle, and SQLite Bin projections.
+- Linked procure-to-pay documents with receipt, invoice, AP, and approval flow.
 
 ## [0.1.1] - 2026-08-24
 

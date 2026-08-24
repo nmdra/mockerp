@@ -175,6 +175,7 @@ def seed_platform(database: Database) -> None:
     seed_payroll(database)
     seed_masters(database)
     seed_inventory(database)
+    seed_purchasing(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -255,6 +256,63 @@ def seed_finance(database: Database) -> None:
         connection.execute(
             "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PAY', 2)"
         )
+
+
+def seed_purchasing(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO material_requests
+                (name, posting_date, status, docstatus, requester_identity)
+            VALUES ('SCP-MR-2026-00001', '2026-01-01', 'Approved', 1, 'procurement-service')
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO material_request_items
+                (request_name, item_code, qty, warehouse, ordered_qty)
+            VALUES ('SCP-MR-2026-00001', 'PKG-BOTTLE-001', 10, 'Peliyagoda Main', 10)
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO purchase_orders
+                (name, supplier, transaction_date, status, docstatus,
+                 total_minor, requester_identity, material_request_name)
+            VALUES ('SCP-PO-2026-00001', 'SCP-Local Packaging', '2026-01-01',
+                    'Approved', 1, 35000, 'procurement-service', 'SCP-MR-2026-00001')
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO purchase_order_items
+                (purchase_order_name, material_request_item_id, item_code, qty,
+                 received_qty, billed_qty, warehouse, rate_minor)
+            VALUES ('SCP-PO-2026-00001', 1, 'PKG-BOTTLE-001', 10, 0, 0,
+                    'Peliyagoda Main', 3500)
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO purchase_invoices
+                (name, supplier, posting_date, status, docstatus,
+                 total_minor, outstanding_minor, owner_identity)
+            VALUES ('SCP-PINV-2026-00001', 'SCP-Local Packaging', '2026-01-01',
+                    'Draft', 0, 1250000, 1250000, 'finance-service')
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO purchase_invoice_items
+                (invoice_name, item_code, qty, rate_minor)
+            VALUES ('SCP-PINV-2026-00001', 'RM-SUGAR-001', 50, 25000)
+            """
+        )
+        for series in ("SCP-MR", "SCP-PO", "SCP-PR", "SCP-PINV"):
+            connection.execute(
+                "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES (?, 2)",
+                (series,),
+            )
 
 
 def seed_inventory(database: Database) -> None:
@@ -352,6 +410,7 @@ def seed_masters(database: Database) -> None:
                     ("FG-TEA-001", "Peliyagoda Main", "target"),
                     ("FG-TEA-001", "Kandy DC", "target"),
                     ("FG-TEA-001", "Galle DC", "target"),
+                    ("PKG-BOTTLE-001", "Peliyagoda Main", "target"),
                 )
             ],
         )

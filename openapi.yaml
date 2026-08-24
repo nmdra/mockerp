@@ -305,6 +305,50 @@ paths:
                   data:
                     $ref: '#/components/schemas/PurchaseInvoice'
 
+  /resource/Material Request:
+    get:
+      summary: List material requests.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Material request records. }
+    post:
+      summary: Create a material request.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Material request created. }
+
+  /resource/Purchase Receipt:
+    get:
+      summary: List purchase receipts.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Purchase receipt records. }
+    post:
+      summary: Create a receipt from an approved purchase order.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Purchase receipt created. }
+
+  /resource/Purchase Receipt/{name}/submit:
+    post:
+      summary: Submit a receipt and update the stock ledger.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Purchase receipt submitted. }
+        '422': { description: Over-receipt or invalid lifecycle. }
+
+  /resource/Purchase Invoice/{name}/submit:
+    post:
+      summary: Submit a purchase invoice and create an AP open item.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Purchase invoice submitted. }
+        '422': { description: Over-bill or invalid lifecycle. }
+
   /resource/Account:
     get:
       summary: List the seeded SCP chart of accounts.
@@ -771,21 +815,27 @@ paths:
 
   /resource/Purchase Order:
     get:
-      summary: List all purchase orders and their current status (e.g., To Receive and Bill).
-      description: Retrieve a list of purchase orders from the inventory module.
+      summary: List purchase orders and approval status.
       security: [{ TokenAuth: [] }]
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PurchaseOrder'
+          description: Purchase order records.
+    post:
+      summary: Create a purchase order from an approved material request.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Purchase order created. }
+        '422': { description: Missing source or invalid threshold. }
+
+  /resource/Purchase Order/{name}/approve:
+    post:
+      summary: Advance a purchase order through sequential approval.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Purchase order advanced. }
+        '422': { description: Wrong role or approval sequence. }
 
   /resource/Company:
     get:

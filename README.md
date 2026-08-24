@@ -97,6 +97,13 @@ and Galle warehouse tree. Item responses expose source and target warehouse
 eligibility; stock quantities remain in the existing Bin fixture until the
 stock-ledger tasks are complete.
 
+## Procure-to-pay
+
+The purchasing flow links Material Request, Purchase Order approval, Purchase
+Receipt, Purchase Invoice, and Payment Entry. Receipt and billing quantities
+are checked against their source documents. Submitted receipts update stock and
+submitted invoices create AP open items through the accounting boundary.
+
 ## Stock ledger
 
 Stock Entry supports material receipt, issue, transfer, manufacturing consumption
