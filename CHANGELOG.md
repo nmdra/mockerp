@@ -23,6 +23,13 @@ All notable changes to MockERP are documented here.
 - Fictional fixed-asset categories, lifecycle events, and disposal controls.
 - Role-gated deterministic operational reports and redacted audit readback.
 
+## [0.2.0] - 2026-08-24
+
+### Added
+
+- SQLite-backed SCP organization, finance, HR, payroll, inventory, purchasing,
+  sales, manufacturing, assets, and report workflows.
+
 ## [0.1.1] - 2026-08-24
 
 ### Added

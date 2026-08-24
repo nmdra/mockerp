@@ -8,7 +8,7 @@ Products (Pvt) Ltd (SCP)**: a fictional Sri Lankan FMCG manufacturer, importer,
 and wholesale distributor. The service moves to the new public repository
 `nmdra/mockerp`, preserving the Mock ERP subtree's Git history. ERPBridge
 consumes the published, version-pinned image
-`ghcr.io/nmdra/mockerp:0.1.1` and fetches its matching versioned OpenAPI contract;
+`ghcr.io/nmdra/mockerp:0.2.0` and fetches its matching versioned OpenAPI contract;
 it no longer builds or vendors the Mock ERP source tree.
 
 The completed system will model SCP's Peliyagoda head office and warehouse,
@@ -145,8 +145,8 @@ industrial cleaning products.
    ERPNext DocType. A future ERPNext adapter maps this documented subset; it is
    not part of this plan.
 10. **Pin the downstream runtime contract.** ERPBridge uses
-    `ghcr.io/nmdra/mockerp:0.1.1` and the matching
-    `https://raw.githubusercontent.com/nmdra/mockerp/v0.1.1/openapi.yaml` rather
+    `ghcr.io/nmdra/mockerp:0.2.0` and the matching
+    `https://raw.githubusercontent.com/nmdra/mockerp/v0.2.0/openapi.yaml` rather
     than `latest` or a mutable branch. Upgrades change both values in one
     reviewed task, run the compatibility suite, and publish a new image tag.
 
