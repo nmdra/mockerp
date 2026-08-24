@@ -124,7 +124,7 @@ async def list_bins(request: Request, role: str = Depends(get_role)):
                 if len(f) >= 4 and f[1] == "item_code" and f[2] == "=":
                     val = f[3]
                     return {"data": [b for b in bins if b["item_code"] == val]}
-        except:
+        except (TypeError, ValueError):
             pass
     return {"data": bins}
 

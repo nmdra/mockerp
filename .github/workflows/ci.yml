@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: latest
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --locked --group test --group dev
+      - name: Run syntax checks
+        run: uv run python -m compileall -q .
+      - name: Run lint checks
+        run: uv run ruff check . --select E4,E7,E9
+      - name: Run tests
+        run: uv run pytest -q

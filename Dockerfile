@@ -10,6 +10,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 FROM python:3.11-slim
+LABEL org.opencontainers.image.source="https://github.com/nmdra/mockerp"
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY . /app

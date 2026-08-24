@@ -193,7 +193,7 @@ The following prerequisite tasks must complete before the numbered application
 numbered descriptions mean the corresponding path under the standalone
 `../mockerp` checkout; ERPBridge must not recreate those files.
 
-- [ ] **Task A: Extract Mock ERP history into `nmdra/mockerp`.** Create the new
+- [x] **Task A: Extract Mock ERP history into `nmdra/mockerp`.** Create the new
   public GitHub repository `nmdra/mockerp` with `gh repo create`, run
   `git subtree split --prefix=mock-erp` from the ERPBridge history, and push the
   resulting root-level history to the new repository's `main` branch. Preserve
@@ -219,7 +219,7 @@ numbered descriptions mean the corresponding path under the standalone
   git -C ../mockerp log --oneline --all | grep 'feat(mock-erp): rewrite mock ERP'
   ```
 
-- [ ] **Task B: Add standalone CI and publish the first pinned GHCR image.**
+- [x] **Task B: Add standalone CI and publish the first pinned GHCR image.**
   Add Python test/lint jobs and a least-privilege GitHub Actions workflow using
   `docker/login-action` and `docker/build-push-action`. Publish
   `ghcr.io/nmdra/mockerp:0.1.0` and an immutable commit tag on release tag
@@ -234,6 +234,7 @@ numbered descriptions mean the corresponding path under the standalone
   `../mockerp/.github/workflows/publish-image.yml` (new),
   `../mockerp/Dockerfile`, `../mockerp/pyproject.toml`,
   `../mockerp/README.md`, `../mockerp/CHANGELOG.md` (new),
+  `../mockerp/tests/test_smoke.py` (new),
   `../mockerp/.github/dependabot.yml` (new, if dependency updates are enabled).
 
   **Verify:**
