@@ -1,1 +1,7 @@
-__pycache__
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.db
+*.sqlite
+*.sqlite3

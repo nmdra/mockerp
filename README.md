@@ -1,6 +1,17 @@
-# Mock ERP Service
+# MockERP
 
-A FastAPI-based mock ERP server that simulates the **ERPNext (Frappe Framework)** REST API conventions. This service is designed for local development and testing of the ERPBridge middleware.
+A FastAPI-based mock ERP server that simulates **ERPNext/Frappe REST API**
+conventions for local development and integration testing. MockERP is an
+independent service for the fictional Serendib Consumer Products (Pvt) Ltd
+scenario and is consumed by ERPBridge through its published container image.
+
+- Repository: <https://github.com/nmdra/mockerp>
+- Container: `ghcr.io/nmdra/mockerp:<version>`
+- API contract: [openapi.yaml](./openapi.yaml)
+- ERPBridge consumer: <https://github.com/nmdra/ERPBridge>
+
+The API is a test fixture. It must use fictional data and environment-provided
+credentials only; it is not a production ERP or a replacement for ERPNext.
 
 ## Features
 - **ERPNext API Paths:** Endpoints follow the `/api/resource/{DocType}` pattern.
@@ -18,7 +29,6 @@ A FastAPI-based mock ERP server that simulates the **ERPNext (Frappe Framework)*
 ### Running the Server
 Using `uv` (Recommended):
 ```bash
-cd mock-erp
 uv run main.py
 ```
 
@@ -44,7 +54,10 @@ Set a cookie named `sid`.
 - `sid=sess-999-finance` (Finance Viewer role)
 
 ## API Documentation
-The full OpenAPI specification is available in [openapi.yaml](./openapi.yaml).
+
+The full OpenAPI specification is available in
+[openapi.yaml](./openapi.yaml). ERPBridge pins a MockERP release and retrieves
+this file from the matching Git tag instead of copying the source tree.
 
 ### Common Endpoints
 - `GET /api/resource/Purchase Invoice` - List purchase invoices
