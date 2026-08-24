@@ -541,7 +541,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 10: Implement stock transactions, stock ledger, and Bin balances.**
+- [x] **Task 10: Implement stock transactions, stock ledger, and Bin balances.**
   Create Stock Entry/Stock Entry Item and append-only Stock Ledger tables and
   services. Support Material Receipt, Material Issue, Material Transfer,
   Manufacturing Consumption, Manufacturing Receipt, and Stock Adjustment;
@@ -554,19 +554,20 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** submitted Stock Entry → stock service → stock ledger/Bin projection
   and optional GL posting atomically.
 
-  **Files:** `mock-erp/migrations/007_inventory.py` (new),
-  `mock-erp/repositories/inventory.py` (new),
-  `mock-erp/services/inventory.py` (new), `mock-erp/routers/inventory.py`,
-  `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_inventory.py` (new),
-  `mock-erp/tests/test_inventory_routes.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/007_inventory.py` (new),
+  `../mockerp/repositories/inventory.py` (new),
+  `../mockerp/services/inventory.py` (new), `../mockerp/routers/inventory.py`,
+  `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_inventory.py` (new),
+  `../mockerp/tests/test_inventory_routes.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_inventory.py tests/test_inventory_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_inventory.py tests/test_inventory_routes.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 11: Implement procure-to-pay.**

@@ -713,6 +713,38 @@ paths:
                   data:
                     $ref: '#/components/schemas/Item'
 
+  /resource/Stock Entry:
+    get:
+      summary: List stock transaction documents.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Stock entry records. }
+    post:
+      summary: Create a draft stock transaction.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Stock entry created. }
+        '422': { description: Invalid item, warehouse, or quantity. }
+
+  /resource/Stock Entry/{name}/submit:
+    post:
+      summary: Submit a stock transaction to the append-only stock ledger.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Stock entry submitted. }
+        '422': { description: Negative stock or invalid lifecycle. }
+
+  /resource/Stock Entry/{name}/cancel:
+    post:
+      summary: Cancel a stock transaction with reversing ledger entries.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Stock entry cancelled. }
+
   /resource/Bin:
     get:
       summary: Query current stock levels (actual, reserved, ordered) across all warehouses (optionally filter by item_code).

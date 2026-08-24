@@ -3,12 +3,13 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from database import Database
 from dependencies import get_actor, get_database, get_role, raise_erpnext_error
 from repositories.masters import MastersRepository
 from services.authorization import Actor
+from services.inventory import InventoryError, cancel_stock_entry, create_stock_entry, submit_stock_entry
 
 router = APIRouter(prefix="/api/resource")
 
@@ -161,19 +162,95 @@ async def list_warehouses(
     return {"data": MastersRepository(database).list_warehouses()}
 
 @router.get("/Bin")
-async def list_bins(request: Request, role: str = Depends(get_role)):
+async def list_bins(
+    request: Request,
+    database: Database = Depends(get_database),
+    actor: Actor = Depends(get_actor),
+) -> dict[str, list[dict[str, object]]]:
+    item_code = None
     filters = request.query_params.get("filters")
     if filters:
         try:
             filter_list = json.loads(filters)
             if filter_list and len(filter_list) > 0:
-                f = filter_list[0]
-                if len(f) >= 4 and f[1] == "item_code" and f[2] == "=":
-                    val = f[3]
-                    return {"data": [b for b in bins if b["item_code"] == val]}
+                condition = filter_list[0]
+                if len(condition) >= 4 and condition[1] == "item_code" and condition[2] == "=":
+                    item_code = condition[3]
         except (TypeError, ValueError):
             pass
-    return {"data": bins}
+    with database.connection() as connection:
+        if item_code:
+            rows = connection.execute(
+                "SELECT * FROM bins WHERE item_code = ? ORDER BY warehouse", (item_code,)
+            ).fetchall()
+        else:
+            rows = connection.execute("SELECT * FROM bins ORDER BY item_code, warehouse").fetchall()
+    return {
+        "data": [
+            {
+                "name": f"{row['item_code']} - {row['warehouse']}",
+                "item_code": row["item_code"],
+                "warehouse": row["warehouse"],
+                "actual_qty": row["actual_qty"],
+                "reserved_qty": row["reserved_qty"],
+                "ordered_qty": row["ordered_qty"],
+                "projected_qty": row["actual_qty"] - row["reserved_qty"] + row["ordered_qty"],
+                "valuation_rate": row["valuation_rate_minor"] / 100,
+                "stock_value": row["stock_value_minor"] / 100,
+            }
+            for row in rows
+        ]
+    }
+
+
+@router.get("/Stock Entry")
+async def list_stock_entries(
+    database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, list[dict[str, object]]]:
+    with database.connection() as connection:
+        entries = connection.execute("SELECT * FROM stock_entries ORDER BY posting_date, name").fetchall()
+    return {"data": [{"name": row["name"], "stock_entry_type": row["entry_type"], "posting_date": row["posting_date"], "status": row["status"]} for row in entries]}
+
+
+@router.post("/Stock Entry", status_code=201)
+async def create_stock_entry_route(
+    data: dict[str, Any],
+    database: Database = Depends(get_database),
+    actor: Actor = Depends(get_actor),
+) -> dict[str, dict[str, object]]:
+    try:
+        entry = create_stock_entry(
+            database,
+            actor,
+            entry_type=str(data.get("stock_entry_type", "")),
+            posting_date=str(data.get("posting_date", "")),
+            items=data.get("items") or [],
+        )
+    except InventoryError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": entry.as_dict()}
+
+
+@router.post("/Stock Entry/{name}/submit")
+async def submit_stock_entry_route(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    try:
+        entry = submit_stock_entry(database, actor, name)
+    except InventoryError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": entry.as_dict()}
+
+
+@router.post("/Stock Entry/{name}/cancel")
+async def cancel_stock_entry_route(
+    name: str, database: Database = Depends(get_database), actor: Actor = Depends(get_actor)
+) -> dict[str, dict[str, object]]:
+    try:
+        entry = cancel_stock_entry(database, actor, name)
+    except InventoryError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"data": entry.as_dict()}
 
 @router.get("/Purchase Order")
 async def list_purchase_orders(role: str = Depends(get_role)):

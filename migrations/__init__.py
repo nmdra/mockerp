@@ -8,6 +8,7 @@ finance = importlib.import_module("migrations.003_finance")
 hr = importlib.import_module("migrations.004_hr")
 payroll = importlib.import_module("migrations.005_payroll")
 masters = importlib.import_module("migrations.006_masters")
+inventory = importlib.import_module("migrations.007_inventory")
 
 Migration = tuple[int, str, Callable[[sqlite3.Connection], None]]
 
@@ -18,4 +19,5 @@ MIGRATIONS: tuple[Migration, ...] = (
     (hr.VERSION, hr.NAME, hr.upgrade),
     (payroll.VERSION, payroll.NAME, payroll.upgrade),
     (masters.VERSION, masters.NAME, masters.upgrade),
+    (inventory.VERSION, inventory.NAME, inventory.upgrade),
 )

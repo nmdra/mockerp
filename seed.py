@@ -174,6 +174,7 @@ def seed_platform(database: Database) -> None:
     seed_hr(database)
     seed_payroll(database)
     seed_masters(database)
+    seed_inventory(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -256,6 +257,26 @@ def seed_finance(database: Database) -> None:
         )
 
 
+def seed_inventory(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO bins
+                (item_code, warehouse, actual_qty, reserved_qty, ordered_qty,
+                 valuation_rate_minor, stock_value_minor)
+            VALUES (?, ?, ?, 0, 0, ?, ?)
+            """,
+            [
+                ("RM-SUGAR-001", "Katunayake Raw Material", 0, 25000, 0),
+                ("RM-SUGAR-001", "Katunayake WIP", 0, 25000, 0),
+                ("FG-TEA-001", "Katunayake Finished Goods", 145, 85000, 12325000),
+                ("FG-TEA-001", "Peliyagoda Main", 0, 85000, 0),
+                ("FG-TEA-001", "Kandy DC", 0, 85000, 0),
+                ("FG-TEA-001", "Galle DC", 0, 85000, 0),
+            ],
+        )
+
+
 def seed_masters(database: Database) -> None:
     with database.transaction() as connection:
         connection.executemany(
@@ -325,6 +346,7 @@ def seed_masters(database: Database) -> None:
                 (item, warehouse, direction)
                 for item, warehouse, direction in (
                     ("RM-SUGAR-001", "Katunayake Raw Material", "source"),
+                    ("RM-SUGAR-001", "Katunayake Raw Material", "target"),
                     ("RM-SUGAR-001", "Katunayake WIP", "target"),
                     ("FG-TEA-001", "Katunayake Finished Goods", "source"),
                     ("FG-TEA-001", "Peliyagoda Main", "target"),

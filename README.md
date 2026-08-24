@@ -97,6 +97,14 @@ and Galle warehouse tree. Item responses expose source and target warehouse
 eligibility; stock quantities remain in the existing Bin fixture until the
 stock-ledger tasks are complete.
 
+## Stock ledger
+
+Stock Entry supports material receipt, issue, transfer, manufacturing consumption
+and receipt, and stock adjustment. Submission updates Bin projections and writes
+append-only stock ledger rows in one transaction. Negative stock, invalid
+warehouse eligibility, and invalid lifecycle changes fail without a partial
+posting.
+
 ## Payroll and expenses
 
 Payroll uses seeded salary components and active assignments to calculate salary
