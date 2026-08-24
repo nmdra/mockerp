@@ -8,7 +8,7 @@ Products (Pvt) Ltd (SCP)**: a fictional Sri Lankan FMCG manufacturer, importer,
 and wholesale distributor. The service moves to the new public repository
 `nmdra/mockerp`, preserving the Mock ERP subtree's Git history. ERPBridge
 consumes the published, version-pinned image
-`ghcr.io/nmdra/mockerp:0.2.0` and fetches its matching versioned OpenAPI contract;
+`ghcr.io/nmdra/mockerp:0.2.1` and fetches its matching versioned OpenAPI contract;
 it no longer builds or vendors the Mock ERP source tree.
 
 The completed system will model SCP's Peliyagoda head office and warehouse,
@@ -145,8 +145,8 @@ industrial cleaning products.
    ERPNext DocType. A future ERPNext adapter maps this documented subset; it is
    not part of this plan.
 10. **Pin the downstream runtime contract.** ERPBridge uses
-    `ghcr.io/nmdra/mockerp:0.2.0` and the matching
-    `https://raw.githubusercontent.com/nmdra/mockerp/v0.2.0/openapi.yaml` rather
+    `ghcr.io/nmdra/mockerp:0.2.1` and the matching
+    `https://raw.githubusercontent.com/nmdra/mockerp/v0.2.1/openapi.yaml` rather
     than `latest` or a mutable branch. Upgrades change both values in one
     reviewed task, run the compatibility suite, and publish a new image tag.
 
@@ -708,7 +708,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 16: Publish the supported contract and complete integration quality gates.**
+- [x] **Task 16: Publish the supported contract and complete integration quality gates.**
   Document the SCP scenario, data-reset workflow, required environment-only
   credentials, security/redaction guarantees, supported document lifecycle,
   known non-goals, and exact ERPNext DocType/field/workflow mappings. Expand
@@ -725,25 +725,31 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** documented OpenAPI → generated ERPBridge tool → authenticated Mock
   ERP → deterministic SQLite-backed response.
 
-  **Files:** `mock-erp/openapi.yaml`, `mock-erp/README.md`,
+  **Files:** `../mockerp/openapi.yaml`, `../mockerp/README.md`,
   `docs/mock-erp.md` (new), `docs/docker.md`, `docs/onboarding.md`,
   `docs/faq.md`, `docs/README.md`, `CHANGELOG.md`,
-  `mock-erp/tests/test_openapi_contract.py` (new),
-  `mock-erp/tests/test_erpbridge_contract.py` (new),
+  `../mockerp/tests/test_openapi_contract.py` (new),
   `../erpbridge-docs/.agents/plans/Plan-mock-erp.md` (new),
-  `../erpbridge-docs/docs/erpbridge/` (matching Mock ERP/API/Docker pages),
+  `../erpbridge-docs/docs/erpbridge/mock-erp.mdx` (new),
+  `../erpbridge-docs/docs/erpbridge/api.mdx`,
+  `../erpbridge-docs/docs/erpbridge/docker.mdx`,
+  `../erpbridge-docs/docs/erpbridge/environment-variables.mdx`,
+  `../erpbridge-docs/docs/erpbridge/onboarding.mdx`,
+  `../erpbridge-docs/docs/erpbridge/faq.mdx`,
   `../erpbridge-docs/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest -q
-  uv run python -c 'import yaml; yaml.safe_load(open("openapi.yaml", encoding="utf-8")); print("valid OpenAPI YAML")'
-  cd ..
+  cd ../mockerp
+  uv run --locked --group test pytest -q
+  uv run --locked --group test python -c 'import yaml; yaml.safe_load(open("openapi.yaml", encoding="utf-8")); print("valid OpenAPI YAML")'
+  cd ../ERPBridge
   make test
+  docker compose config --quiet
   git diff --check
-  git status --short
+  cd ../erpbridge-docs
+  npm run build
   ```
 
 ## Verification
