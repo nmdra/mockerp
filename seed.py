@@ -111,8 +111,10 @@ _WAREHOUSES = (
 )
 _ITEMS = (
     ("RM-SUGAR-001", "Ceylon Cane Sugar", "Raw Materials", "Kg", 250, "Moving Average", 0, 1000, 5000),
+    ("RM-CLEANER-CONC-001", "Floor Cleaner Concentrate", "Raw Materials", "Litre", 420, "Moving Average", 0, 100, 500),
     ("PKG-BOTTLE-001", "Food Grade Bottle", "Packaging", "Nos", 35, "Moving Average", 0, 5000, 20000),
     ("FG-TEA-001", "Serendib Breakfast Tea", "Finished Goods", "Box", 850, "FIFO", 1, 500, 2000),
+    ("FG-CLEANER-5L", "Serendib Floor Cleaner 5L", "Finished Goods", "Nos", 1450, "FIFO", 1, 50, 200),
     ("IMP-SPICE-001", "Imported Cinnamon Blend", "Imported Products", "Kg", 1800, "FIFO", 1, 100, 500),
     ("OFF-PAPER-001", "Office Copy Paper", "Office Supplies", "Box", 2200, "Moving Average", 0, 20, 100),
     ("SPARE-BELT-001", "Factory Conveyor Belt", "Spare Parts", "Nos", 12500, "Moving Average", 0, 2, 5),
@@ -179,6 +181,7 @@ def seed_platform(database: Database) -> None:
     seed_inventory(database)
     seed_purchasing(database)
     seed_sales(database)
+    seed_manufacturing(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -258,6 +261,25 @@ def seed_finance(database: Database) -> None:
         )
         connection.execute(
             "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PAY', 2)"
+        )
+
+
+def seed_manufacturing(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO boms (name, item_code, quantity, is_active)
+            VALUES ('BOM-FG-CLEANER-5L-001', 'FG-CLEANER-5L', 1, 1)
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO bom_items (bom_name, item_code, qty, uom)
+            VALUES ('BOM-FG-CLEANER-5L-001', 'RM-CLEANER-CONC-001', 1, 'Litre')
+            """
+        )
+        connection.execute(
+            "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PROD', 2)"
         )
 
 
@@ -360,6 +382,8 @@ def seed_inventory(database: Database) -> None:
             [
                 ("RM-SUGAR-001", "Katunayake Raw Material", 0, 25000, 0),
                 ("RM-SUGAR-001", "Katunayake WIP", 0, 25000, 0),
+                ("RM-CLEANER-CONC-001", "Katunayake Raw Material", 500, 42000, 21000000),
+                ("FG-CLEANER-5L", "Katunayake Finished Goods", 0, 145000, 0),
                 ("FG-TEA-001", "Katunayake Finished Goods", 145, 85000, 12325000),
                 ("FG-TEA-001", "Peliyagoda Main", 0, 85000, 0),
                 ("FG-TEA-001", "Kandy DC", 0, 85000, 0),
@@ -444,6 +468,9 @@ def seed_masters(database: Database) -> None:
                     ("FG-TEA-001", "Kandy DC", "target"),
                     ("FG-TEA-001", "Galle DC", "target"),
                     ("PKG-BOTTLE-001", "Peliyagoda Main", "target"),
+                    ("RM-CLEANER-CONC-001", "Katunayake Raw Material", "source"),
+                    ("FG-CLEANER-5L", "Katunayake Finished Goods", "source"),
+                    ("FG-CLEANER-5L", "Katunayake Finished Goods", "target"),
                 )
             ],
         )

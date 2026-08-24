@@ -305,6 +305,36 @@ paths:
                   data:
                     $ref: '#/components/schemas/PurchaseInvoice'
 
+  /resource/BOM:
+    get:
+      summary: List active single-level SCP bills of material.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: BOM records. }
+
+  /resource/Production Order:
+    get:
+      summary: List production orders.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Production order records. }
+    post:
+      summary: Create a production order from an active BOM.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Production order created. }
+        '422': { description: Missing BOM or invalid warehouse. }
+
+  /resource/Production Order/{name}/submit:
+    post:
+      summary: Consume raw material and receive finished goods.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Production order completed. }
+        '422': { description: Insufficient material or invalid lifecycle. }
+
   /resource/Sales Order:
     get:
       summary: List Southern Hotels and other fictional customer sales orders.

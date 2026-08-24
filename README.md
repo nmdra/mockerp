@@ -97,6 +97,13 @@ and Galle warehouse tree. Item responses expose source and target warehouse
 eligibility; stock quantities remain in the existing Bin fixture until the
 stock-ledger tasks are complete.
 
+## Manufacturing-lite
+
+The seeded single-level Floor Cleaner 5L BOM supports a constrained production
+flow. A submitted production order consumes raw material and receives finished
+goods through the stock ledger. The service does not implement MRP, scheduling,
+routing, or job cards.
+
 ## Order-to-cash
 
 Sales Order, Delivery Note, and Sales Invoice link through source quantities.

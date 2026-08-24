@@ -626,7 +626,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 13: Implement manufacturing-lite.**
+- [x] **Task 13: Implement manufacturing-lite.**
   Add active single-level BOM/BOM Item and Production Order tables/services.
   Seed the Floor Cleaner 5L BOM. Allow a submitted production order to transfer
   raw materials to WIP, consume the actual or BOM quantities, receive finished
@@ -638,19 +638,19 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** production order action → manufacturing service → Stock Entry and
   accounting services with production-order source references.
 
-  **Files:** `mock-erp/migrations/010_manufacturing.py` (new),
-  `mock-erp/repositories/manufacturing.py` (new),
-  `mock-erp/services/manufacturing.py` (new),
-  `mock-erp/routers/manufacturing.py` (new), `mock-erp/openapi.yaml`,
-  `mock-erp/seed.py`, `mock-erp/tests/test_manufacturing.py` (new),
-  `mock-erp/tests/test_manufacturing_routes.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/010_manufacturing.py` (new),
+  `../mockerp/services/manufacturing.py` (new),
+  `../mockerp/routers/manufacturing.py` (new), `../mockerp/openapi.yaml`,
+  `../mockerp/seed.py`, `../mockerp/tests/test_manufacturing.py` (new),
+  `../mockerp/tests/test_manufacturing_routes.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_manufacturing.py tests/test_manufacturing_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_manufacturing.py tests/test_manufacturing_routes.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 14: Add fixed assets and depreciation.**
