@@ -12,6 +12,7 @@ All notable changes to MockERP are documented here.
 - SQLite platform migrations, deterministic SCP bootstrap, and development-only reset.
 - Environment or Docker-secret credential loading with fail-closed startup.
 - SCP organization masters, sequential approvals, authorization, and audit history.
+- SQLite-backed chart of accounts, journal entries, payments, and open-item allocation.
 
 ## [0.1.1] - 2026-08-24
 

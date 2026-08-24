@@ -74,6 +74,13 @@ the configured threshold requires finance and administrator approvals in order.
 Approval actions write immutable, redacted audit events. Credentials and
 protected document values are never written to audit metadata.
 
+## Finance foundation
+
+The finance routes use SQLite-backed SCP accounts and minor-unit money values.
+Journal entries and payment entries are created as drafts, submitted only after
+validation, and cancelled with compensating postings. Payment references update
+open-item balances in the same transaction as the ledger posting.
+
 ## Shared integration fixtures
 
 These deterministic endpoints are used by ERPBridge integration tests. Each

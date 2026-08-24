@@ -428,7 +428,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 6: Implement the finance foundation and immutable double-entry ledger.**
+- [x] **Task 6: Implement the finance foundation and immutable double-entry ledger.**
   Start with red tests for chart hierarchy, Decimal/minor-unit conversion,
   balanced Journal Entry submission, prohibited unbalanced postings,
   cancellation reversals, AR/AP outstanding balances, and partial payment
@@ -442,19 +442,20 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** submitted finance document → accounting posting service → balanced
   GL/payment-ledger rows in one SQLite transaction.
 
-  **Files:** `mock-erp/migrations/003_finance.py` (new),
-  `mock-erp/repositories/finance.py` (new),
-  `mock-erp/services/accounting.py` (new), `mock-erp/routers/finance.py`,
-  `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_accounting.py` (new),
-  `mock-erp/tests/test_finance_routes.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/003_finance.py` (new),
+  `../mockerp/repositories/finance.py` (new),
+  `../mockerp/services/accounting.py` (new), `../mockerp/routers/finance.py`,
+  `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_accounting.py` (new),
+  `../mockerp/tests/test_finance_routes.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_accounting.py tests/test_finance_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_accounting.py tests/test_finance_routes.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 7: Implement HR core and leave workflow.**

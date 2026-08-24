@@ -73,7 +73,17 @@ components:
         posting_date: { type: string, format: date }
         paid_amount: { type: number }
         received_amount: { type: number }
-        status: { type: string }
+        status: { type: string, enum: [Draft, Submitted, Cancelled] }
+        paid_from: { type: string }
+        paid_to: { type: string }
+        references:
+          type: array
+          items:
+            type: object
+            properties:
+              reference_doctype: { type: string }
+              reference_name: { type: string }
+              allocated_amount: { type: number }
 
     JournalEntry:
       type: object
@@ -86,6 +96,16 @@ components:
         total_debit: { type: number }
         total_credit: { type: number }
         remark: { type: string }
+        status: { type: string, enum: [Draft, Submitted, Cancelled] }
+        accounts:
+          type: array
+          items:
+            type: object
+            required: [account]
+            properties:
+              account: { type: string }
+              debit: { type: number, minimum: 0 }
+              credit: { type: number, minimum: 0 }
 
     # HR Schemas
     Employee:
@@ -285,14 +305,21 @@ paths:
                   data:
                     $ref: '#/components/schemas/PurchaseInvoice'
 
-  /resource/Payment Entry:
+  /resource/Account:
     get:
-      summary: Get a list of all payment entries, including their status, payment mode, and linked invoices.
-      description: Retrieve a list of payment entries from the finance module.
+      summary: List the seeded SCP chart of accounts.
       security: [{ TokenAuth: [] }]
       responses:
         '200':
-          description: OK
+          description: Account records.
+
+  /resource/Payment Entry:
+    get:
+      summary: Get payment entries from the immutable payment ledger boundary.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200':
+          description: Payment entries.
           content:
             application/json:
               schema:
@@ -300,17 +327,56 @@ paths:
                 properties:
                   data:
                     type: array
-                    items:
-                      $ref: '#/components/schemas/PaymentEntry'
+                    items: { $ref: '#/components/schemas/PaymentEntry' }
+    post:
+      summary: Create a draft payment entry.
+      security: [{ TokenAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PaymentEntry' }
+      responses:
+        '201': { description: Draft payment entry created. }
+        '422': { description: Invalid payment or account. }
+
+  /resource/Payment Entry/{name}:
+    get:
+      summary: Retrieve one payment entry.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Payment entry. }
+        '404': { description: Payment entry not found. }
+
+  /resource/Payment Entry/{name}/submit:
+    post:
+      summary: Submit a payment and post its balanced ledger entries.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Payment submitted. }
+        '422': { description: Invalid allocation or lifecycle state. }
+
+  /resource/Payment Entry/{name}/cancel:
+    post:
+      summary: Cancel a payment with a compensating ledger posting.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Payment cancelled. }
+        '422': { description: Invalid lifecycle state. }
 
   /resource/Journal Entry:
     get:
-      summary: Retrieve all journal entries for accounting audits and ledger verification.
-      description: Retrieve all journal entries from the finance module.
+      summary: Retrieve journal entries for accounting audits and ledger verification.
       security: [{ TokenAuth: [] }]
       responses:
         '200':
-          description: OK
+          description: Journal entries.
           content:
             application/json:
               schema:
@@ -318,8 +384,48 @@ paths:
                 properties:
                   data:
                     type: array
-                    items:
-                      $ref: '#/components/schemas/JournalEntry'
+                    items: { $ref: '#/components/schemas/JournalEntry' }
+    post:
+      summary: Create a draft journal entry.
+      security: [{ TokenAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JournalEntry' }
+      responses:
+        '201': { description: Draft journal entry created. }
+        '422': { description: Invalid or unbalanced journal entry. }
+
+  /resource/Journal Entry/{name}:
+    get:
+      summary: Retrieve one journal entry.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Journal entry. }
+        '404': { description: Journal entry not found. }
+
+  /resource/Journal Entry/{name}/submit:
+    post:
+      summary: Submit a balanced journal entry to the GL.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Journal entry submitted. }
+        '422': { description: Journal entry is not balanced or not draft. }
+
+  /resource/Journal Entry/{name}/cancel:
+    post:
+      summary: Cancel a journal entry with a reversing posting.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Journal entry cancelled. }
+        '422': { description: Invalid lifecycle state. }
 
   /resource/Employee:
     get:
