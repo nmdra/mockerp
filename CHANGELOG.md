@@ -10,6 +10,12 @@ All notable changes to MockERP are documented here.
 - Health smoke coverage for the service boundary.
 - Authenticated deterministic integration fixture and echo endpoints.
 
+## [0.1.1] - 2026-08-24
+
+### Added
+
+- Authenticated deterministic integration fixture and echo endpoints.
+
 ## [0.1.0] - 2026-08-24
 
 ### Added
