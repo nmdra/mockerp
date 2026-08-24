@@ -12,6 +12,7 @@ inventory = importlib.import_module("migrations.007_inventory")
 purchasing = importlib.import_module("migrations.008_purchasing")
 sales = importlib.import_module("migrations.009_sales")
 manufacturing = importlib.import_module("migrations.010_manufacturing")
+assets = importlib.import_module("migrations.011_assets")
 
 Migration = tuple[int, str, Callable[[sqlite3.Connection], None]]
 
@@ -26,4 +27,5 @@ MIGRATIONS: tuple[Migration, ...] = (
     (purchasing.VERSION, purchasing.NAME, purchasing.upgrade),
     (sales.VERSION, sales.NAME, sales.upgrade),
     (manufacturing.VERSION, manufacturing.NAME, manufacturing.upgrade),
+    (assets.VERSION, assets.NAME, assets.upgrade),
 )

@@ -653,7 +653,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 14: Add fixed assets and depreciation.**
+- [x] **Task 14: Add fixed assets and depreciation.**
   Add Asset Category, Asset, assignment/location, depreciation schedule,
   transfer, and disposal records. Seed a safe sample set of delivery trucks,
   forklifts, mixing/filling machines, computers, furniture, air conditioners,
@@ -665,18 +665,19 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** approved asset event → asset service → depreciation schedule and
   accounting posting transaction.
 
-  **Files:** `mock-erp/migrations/011_assets.py` (new),
-  `mock-erp/repositories/assets.py` (new), `mock-erp/services/assets.py` (new),
-  `mock-erp/routers/assets.py` (new), `mock-erp/openapi.yaml`,
-  `mock-erp/seed.py`, `mock-erp/tests/test_assets.py` (new),
-  `mock-erp/tests/test_asset_routes.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/011_assets.py` (new),
+  `../mockerp/services/assets.py` (new), `../mockerp/routers/assets.py` (new),
+  `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_assets.py` (new),
+  `../mockerp/tests/test_asset_routes.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_assets.py tests/test_asset_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_assets.py tests/test_asset_routes.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 15: Deliver constrained dashboards, audit readback, and the full deterministic scenario.**

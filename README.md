@@ -97,6 +97,13 @@ and Galle warehouse tree. Item responses expose source and target warehouse
 eligibility; stock quantities remain in the existing Bin fixture until the
 stock-ledger tasks are complete.
 
+## Fixed assets
+
+Asset categories and fictional sample assets cover vehicles, forklifts, factory
+machines, computers, furniture, air conditioners, and generators. Capitalize,
+transfer, depreciate, and dispose operations preserve event history and use
+balanced ledger postings where applicable.
+
 ## Manufacturing-lite
 
 The seeded single-level Floor Cleaner 5L BOM supports a constrained production

@@ -305,6 +305,53 @@ paths:
                   data:
                     $ref: '#/components/schemas/PurchaseInvoice'
 
+  /resource/Asset Category:
+    get:
+      summary: List seeded fictional asset categories.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Asset category records. }
+
+  /resource/Asset:
+    get:
+      summary: List fixed assets and lifecycle state.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Asset records. }
+    post:
+      summary: Create a draft asset.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Asset created. }
+
+  /resource/Asset/{name}/capitalize:
+    post:
+      summary: Capitalize an asset and post its GL entry.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Asset capitalized. }
+
+  /resource/Asset/{name}/transfer:
+    post:
+      summary: Transfer an asset and preserve its event history.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Asset transferred. }
+
+  /resource/Asset/{name}/dispose:
+    post:
+      summary: Dispose an asset once and record disposal history.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Asset disposed. }
+        '422': { description: Asset already disposed or invalid lifecycle. }
+
   /resource/BOM:
     get:
       summary: List active single-level SCP bills of material.

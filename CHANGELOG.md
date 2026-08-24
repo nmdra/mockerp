@@ -20,6 +20,7 @@ All notable changes to MockERP are documented here.
 - Linked procure-to-pay documents with receipt, invoice, AP, and approval flow.
 - Southern Hotels order-to-cash flow with delivery stock issues and AR invoices.
 - Single-level Floor Cleaner BOM and production stock flow.
+- Fictional fixed-asset categories, lifecycle events, and disposal controls.
 
 ## [0.1.1] - 2026-08-24
 

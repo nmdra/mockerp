@@ -182,6 +182,7 @@ def seed_platform(database: Database) -> None:
     seed_purchasing(database)
     seed_sales(database)
     seed_manufacturing(database)
+    seed_assets(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -261,6 +262,50 @@ def seed_finance(database: Database) -> None:
         )
         connection.execute(
             "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PAY', 2)"
+        )
+
+
+def seed_assets(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO asset_categories
+                (name, asset_account, accumulated_depreciation_account,
+                 depreciation_expense_account, default_useful_life_months, is_active)
+            VALUES (?, '1000 - Assets - SCP', '2000 - Liabilities - SCP',
+                    '5100 - COGS - SCP', ?, 1)
+            """,
+            [
+                ("Vehicles", 60),
+                ("Material Handling Equipment", 60),
+                ("Factory Machinery", 120),
+                ("Computer Equipment", 36),
+                ("Furniture", 60),
+                ("Air Conditioners", 60),
+                ("Generators", 120),
+            ],
+        )
+        samples = (
+            ("SCP-AST-TRUCK-001", "Vehicles", "SCP Delivery Truck 001", 8500000, "Peliyagoda Main"),
+            ("SCP-AST-FORKLIFT-001", "Material Handling Equipment", "SCP Forklift 001", 2200000, "Katunayake Raw Material"),
+            ("SCP-AST-MIXER-001", "Factory Machinery", "SCP Mixing Machine 001", 12500000, "Katunayake Factory"),
+            ("SCP-AST-COMPUTER-001", "Computer Equipment", "SCP Office Computer 001", 250000, "Peliyagoda Head Office"),
+            ("SCP-AST-FURNITURE-001", "Furniture", "SCP Office Furniture 001", 180000, "Peliyagoda Head Office"),
+            ("SCP-AST-AC-001", "Air Conditioners", "SCP Factory Air Conditioner 001", 450000, "Katunayake Factory"),
+            ("SCP-AST-GENERATOR-001", "Generators", "SCP Backup Generator 001", 3800000, "Katunayake Factory"),
+        )
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO assets
+                (name, category, asset_name, acquisition_date,
+                 acquisition_cost_minor, location, status, docstatus, owner_identity)
+            VALUES (?, ?, ?, '2026-01-01', ?, ?, 'Capitalized', 1, 'admin-service')
+            """,
+            samples,
+        )
+        connection.executemany(
+            "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES (?, 2)",
+            [("SCP-AST",)],
         )
 
 
