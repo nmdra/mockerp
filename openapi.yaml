@@ -427,6 +427,44 @@ paths:
         '200': { description: Journal entry cancelled. }
         '422': { description: Invalid lifecycle state. }
 
+  /resource/Attendance:
+    get:
+      summary: List attendance records with Frappe HR attendance states.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Attendance records. }
+    post:
+      summary: Create one attendance record.
+      security: [{ TokenAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee, attendance_date, status]
+              properties:
+                employee: { type: string }
+                attendance_date: { type: string, format: date }
+                status: { type: string, enum: [Present, Absent, Half Day, Work From Home] }
+      responses:
+        '201': { description: Attendance created. }
+        '422': { description: Invalid, future, or duplicate attendance. }
+
+  /resource/Leave Type:
+    get:
+      summary: List configured leave types.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Leave type records. }
+
+  /resource/Leave Allocation:
+    get:
+      summary: List employee leave allocations and remaining balances.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Leave allocation records. }
+
   /resource/Employee:
     get:
       summary: List all active and inactive employees with basic profile information such as designation and department.
@@ -467,32 +505,13 @@ paths:
                   data:
                     $ref: '#/components/schemas/Employee'
 
-  /resource/Department:
-    get:
-      summary: List all company departments and their organizational hierarchy.
-      description: Retrieve a list of departments from the HR module.
-      security: [{ TokenAuth: [] }]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Department'
-
   /resource/Leave Application:
     get:
-      summary: Fetch a list of employee leave applications, including dates, types, and current approval status.
-      description: Retrieve a list of leave applications from the HR module.
+      summary: Fetch employee leave applications and approval status.
       security: [{ TokenAuth: [] }]
       responses:
         '200':
-          description: OK
+          description: Leave application records.
           content:
             application/json:
               schema:
@@ -500,8 +519,58 @@ paths:
                 properties:
                   data:
                     type: array
-                    items:
-                      $ref: '#/components/schemas/LeaveApplication'
+                    items: { $ref: '#/components/schemas/LeaveApplication' }
+    post:
+      summary: Create a leave application for sequential approval.
+      security: [{ TokenAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeaveApplication' }
+      responses:
+        '201': { description: Leave application created. }
+        '422': { description: Insufficient balance or invalid dates. }
+
+  /resource/Leave Application/{name}:
+    get:
+      summary: Retrieve one leave application.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Leave application. }
+        '404': { description: Leave application not found. }
+
+  /resource/Leave Application/{name}/approve:
+    post:
+      summary: Approve the next leave workflow sequence.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Leave application advanced. }
+        '422': { description: Wrong role or workflow state. }
+
+  /resource/Leave Application/{name}/reject:
+    post:
+      summary: Reject a leave application.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Leave application rejected. }
+        '422': { description: Wrong role or workflow state. }
+
+  /resource/Leave Application/{name}/cancel:
+    post:
+      summary: Cancel a leave application and release approved balance.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Leave application cancelled. }
+        '422': { description: Invalid lifecycle state. }
 
   /resource/Salary Slip:
     get:

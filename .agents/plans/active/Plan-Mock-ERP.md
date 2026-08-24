@@ -458,7 +458,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 7: Implement HR core and leave workflow.**
+- [x] **Task 7: Implement HR core and leave workflow.**
   Add employee, branch/department transfer, resignation, safe document
   metadata, attendance, leave type, leave allocation, and leave-application
   tables and services. Use the four Frappe HR attendance states, prevent future
@@ -471,17 +471,18 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** employee/manager request → HR service → approval workflow and
   leave/attendance repository.
 
-  **Files:** `mock-erp/migrations/004_hr.py` (new),
-  `mock-erp/repositories/hr.py` (new), `mock-erp/services/hr.py` (new),
-  `mock-erp/routers/hr.py`, `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_hr.py` (new), `mock-erp/tests/test_hr_routes.py` (new),
-  `mock-erp/README.md`, `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/004_hr.py` (new),
+  `../mockerp/repositories/hr.py` (new), `../mockerp/services/hr.py` (new),
+  `../mockerp/routers/hr.py`, `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_hr.py` (new), `../mockerp/tests/test_hr_routes.py` (new),
+  `../mockerp/README.md`, `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_hr.py tests/test_hr_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_hr.py tests/test_hr_routes.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 8: Add payroll, employee advances, and expense claims.**

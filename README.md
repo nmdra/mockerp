@@ -74,6 +74,14 @@ the configured threshold requires finance and administrator approvals in order.
 Approval actions write immutable, redacted audit events. Credentials and
 protected document values are never written to audit metadata.
 
+## HR foundation
+
+Employee, attendance, leave type, allocation, and leave application resources
+are SQLite-backed. Attendance accepts `Present`, `Absent`, `Half Day`, and `Work
+From Home`; future and duplicate employee/date records are rejected. Leave
+applications calculate inclusive days, enforce allocation balances, and use the
+employee → department manager → HR approval sequence.
+
 ## Finance foundation
 
 The finance routes use SQLite-backed SCP accounts and minor-unit money values.

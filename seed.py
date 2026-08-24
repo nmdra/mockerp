@@ -81,6 +81,23 @@ _APPROVAL_RULES = (
     ("Leave Application", 1, "department_manager", 0),
     ("Leave Application", 2, "hr_manager", 0),
 )
+_EMPLOYEES = (
+    (
+        "EMP-SCP-00001",
+        "Kavindu Jayasekara",
+        "Kavindu",
+        "Jayasekara",
+        "Peliyagoda Head Office",
+        "Finance",
+        "Officer",
+        "Full-time",
+        "employee-service",
+        "manager-service",
+        "1992-03-15",
+        "2021-06-01",
+    ),
+)
+_LEAVE_TYPES = (("Annual Leave", 20), ("Sick Leave", 10))
 _ACCOUNTS = (
     ("1000 - Assets - SCP", "1000", "Asset", None, 1),
     ("1100 - Bank - SCP", "1100", "Asset", "1000 - Assets - SCP", 0),
@@ -119,6 +136,7 @@ def seed_platform(database: Database) -> None:
         )
     seed_organization(database)
     seed_finance(database)
+    seed_hr(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -198,6 +216,84 @@ def seed_finance(database: Database) -> None:
         )
         connection.execute(
             "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PAY', 2)"
+        )
+
+
+def seed_hr(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.executemany(
+            """
+            INSERT OR IGNORE INTO employees
+                (name, employee_name, first_name, last_name, company_name,
+                 branch_name, department_name, designation, employment_type,
+                 user_identity, supervisor_identity, date_of_birth,
+                 date_of_joining, status, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', 1)
+            """,
+            [
+                (
+                    name,
+                    employee_name,
+                    first_name,
+                    last_name,
+                    _COMPANY[0],
+                    branch,
+                    department,
+                    designation,
+                    employment_type,
+                    user_identity,
+                    supervisor,
+                    date_of_birth,
+                    date_of_joining,
+                )
+                for (
+                    name,
+                    employee_name,
+                    first_name,
+                    last_name,
+                    branch,
+                    department,
+                    designation,
+                    employment_type,
+                    user_identity,
+                    supervisor,
+                    date_of_birth,
+                    date_of_joining,
+                ) in _EMPLOYEES
+            ],
+        )
+        connection.executemany(
+            "INSERT OR IGNORE INTO leave_types (name, max_days, is_active) VALUES (?, ?, 1)",
+            _LEAVE_TYPES,
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO leave_allocations
+                (employee_name, leave_type, from_date, to_date, total_days, used_days)
+            VALUES ('EMP-SCP-00001', 'Annual Leave', '2026-01-01', '2026-12-31', 20, 3)
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO leave_allocations
+                (employee_name, leave_type, from_date, to_date, total_days, used_days)
+            VALUES ('EMP-SCP-00001', 'Sick Leave', '2026-01-01', '2026-12-31', 10, 0)
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO leave_applications
+                (name, employee_name, leave_type, from_date, to_date, total_days,
+                 half_day, status, docstatus, description, posting_date,
+                 approval_request_id, owner_identity)
+            VALUES ('SCP-LA-2026-00001', 'EMP-SCP-00001', 'Annual Leave',
+                    '2026-06-10', '2026-06-12', 3, 0, 'Approved', 1,
+                    'Fictional annual leave fixture', '2026-05-15', NULL,
+                    'employee-service')
+            """
+        )
+        connection.execute(
+            "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-LA', 2)"
         )
 
 

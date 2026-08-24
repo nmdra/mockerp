@@ -13,6 +13,7 @@ All notable changes to MockERP are documented here.
 - Environment or Docker-secret credential loading with fail-closed startup.
 - SCP organization masters, sequential approvals, authorization, and audit history.
 - SQLite-backed chart of accounts, journal entries, payments, and open-item allocation.
+- SCP employees, attendance, leave balances, and sequential leave approvals.
 
 ## [0.1.1] - 2026-08-24
 
