@@ -84,6 +84,7 @@ _APPROVAL_RULES = (
 _CUSTOMERS = (
     ("SCP-Wholesale Distributors", "SCP Wholesale Distributors", "Wholesale", "Western"),
     ("SCP-Kandy Retail Network", "SCP Kandy Retail Network", "Retail", "Central"),
+    ("Southern Hotels", "Southern Hotels", "Hospitality", "Southern"),
 )
 _SUPPLIERS = (
     ("SCP-Local Packaging", "SCP Local Packaging", "Packaging", "Sri Lanka"),
@@ -137,6 +138,7 @@ _ACCOUNTS = (
     ("1000 - Assets - SCP", "1000", "Asset", None, 1),
     ("1100 - Bank - SCP", "1100", "Asset", "1000 - Assets - SCP", 0),
     ("1200 - Bank - SCP", "1200", "Asset", "1000 - Assets - SCP", 0),
+    ("1300 - Debtors - SCP", "1300", "Asset", "1000 - Assets - SCP", 0),
     ("2000 - Liabilities - SCP", "2000", "Liability", None, 1),
     ("2100 - Creditors - SCP", "2100", "Liability", "2000 - Liabilities - SCP", 0),
     ("4000 - Income - SCP", "4000", "Income", None, 1),
@@ -176,6 +178,7 @@ def seed_platform(database: Database) -> None:
     seed_masters(database)
     seed_inventory(database)
     seed_purchasing(database)
+    seed_sales(database)
 
 
 def seed_finance(database: Database) -> None:
@@ -256,6 +259,36 @@ def seed_finance(database: Database) -> None:
         connection.execute(
             "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES ('SCP-PAY', 2)"
         )
+
+
+def seed_sales(database: Database) -> None:
+    with database.transaction() as connection:
+        connection.execute(
+            "UPDATE customers SET credit_limit_minor = 5000000 WHERE name = 'Southern Hotels'"
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO sales_orders
+                (name, customer, transaction_date, status, docstatus,
+                 total_minor, owner_identity)
+            VALUES ('SCP-SO-2026-00001', 'Southern Hotels', '2026-01-01',
+                    'Approved', 1, 850000, 'inventory-service')
+            """
+        )
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO sales_order_items
+                (sales_order_name, item_code, qty, delivered_qty, billed_qty,
+                 warehouse, rate_minor)
+            VALUES ('SCP-SO-2026-00001', 'FG-TEA-001', 10, 0, 0,
+                    'Katunayake Finished Goods', 85000)
+            """
+        )
+        for series in ("SCP-SO", "SCP-DN", "SCP-SINV"):
+            connection.execute(
+                "INSERT OR IGNORE INTO document_sequences (series, next_value) VALUES (?, 2)",
+                (series,),
+            )
 
 
 def seed_purchasing(database: Database) -> None:

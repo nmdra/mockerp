@@ -305,6 +305,63 @@ paths:
                   data:
                     $ref: '#/components/schemas/PurchaseInvoice'
 
+  /resource/Sales Order:
+    get:
+      summary: List Southern Hotels and other fictional customer sales orders.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Sales order records. }
+    post:
+      summary: Create a sales order with customer credit-limit validation.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Sales order created. }
+        '422': { description: Credit limit or item validation failure. }
+
+  /resource/Delivery Note:
+    get:
+      summary: List delivery notes.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Delivery note records. }
+    post:
+      summary: Create a delivery note from a sales order.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Delivery note created. }
+
+  /resource/Delivery Note/{name}/submit:
+    post:
+      summary: Submit a delivery note and issue stock.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Delivery note submitted. }
+        '422': { description: Over-delivery or insufficient stock. }
+
+  /resource/Sales Invoice:
+    get:
+      summary: List sales invoices and AR balances.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '200': { description: Sales invoice records. }
+    post:
+      summary: Create a sales invoice from a submitted delivery note.
+      security: [{ TokenAuth: [] }]
+      responses:
+        '201': { description: Sales invoice created. }
+
+  /resource/Sales Invoice/{name}/submit:
+    post:
+      summary: Submit a sales invoice and create an AR open item.
+      security: [{ TokenAuth: [] }]
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Sales invoice submitted. }
+        '422': { description: Invalid billing lifecycle. }
+
   /resource/Material Request:
     get:
       summary: List material requests.

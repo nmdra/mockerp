@@ -97,6 +97,13 @@ and Galle warehouse tree. Item responses expose source and target warehouse
 eligibility; stock quantities remain in the existing Bin fixture until the
 stock-ledger tasks are complete.
 
+## Order-to-cash
+
+Sales Order, Delivery Note, and Sales Invoice link through source quantities.
+Delivery issues stock, invoices create AR open items, and customer credit limits
+are checked before order creation. Southern Hotels is a fictional seeded
+customer scenario.
+
 ## Procure-to-pay
 
 The purchasing flow links Material Request, Purchase Order approval, Purchase

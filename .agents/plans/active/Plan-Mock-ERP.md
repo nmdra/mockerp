@@ -598,7 +598,7 @@ numbered descriptions mean the corresponding path under the standalone
   uv run --locked --group test python -m compileall -q .
   ```
 
-- [ ] **Task 12: Implement order-to-cash.**
+- [x] **Task 12: Implement order-to-cash.**
   Add optional Quotation, Sales Order, Delivery Note, Sales Invoice, and linked
   Payment Entry flows. Support partial delivery, partial billing, and partial
   payment; reserve/validate warehouse stock at the agreed point; make Delivery
@@ -610,19 +610,20 @@ numbered descriptions mean the corresponding path under the standalone
   **Seam:** submitted sales document → sales service → source progress,
   stock/COGS, AR/income, and payment-allocation services.
 
-  **Files:** `mock-erp/migrations/009_sales.py` (new),
-  `mock-erp/repositories/sales.py` (new), `mock-erp/services/sales.py` (new),
-  `mock-erp/routers/sales.py` (new), `mock-erp/routers/finance.py`,
-  `mock-erp/openapi.yaml`, `mock-erp/seed.py`,
-  `mock-erp/tests/test_sales.py` (new),
-  `mock-erp/tests/test_sales_routes.py` (new), `mock-erp/README.md`,
-  `CHANGELOG.md`.
+  **Files:** `../mockerp/migrations/009_sales.py` (new),
+  `../mockerp/repositories/sales.py` (new), `../mockerp/services/sales.py` (new),
+  `../mockerp/routers/sales.py` (new), `../mockerp/routers/finance.py`,
+  `../mockerp/openapi.yaml`, `../mockerp/seed.py`,
+  `../mockerp/tests/test_sales.py` (new),
+  `../mockerp/tests/test_sales_routes.py` (new), `../mockerp/README.md`,
+  `../mockerp/CHANGELOG.md`.
 
   **Verify:**
 
   ```bash
-  cd mock-erp
-  uv run --group test pytest tests/test_sales.py tests/test_sales_routes.py -q
+  cd ../mockerp
+  uv run --locked --group test pytest tests/test_sales.py tests/test_sales_routes.py -q
+  uv run --locked --group test python -m compileall -q .
   ```
 
 - [ ] **Task 13: Implement manufacturing-lite.**
